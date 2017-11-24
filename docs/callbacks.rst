@@ -2,7 +2,7 @@
 Callbacks
 =========
 
-Henson operates on messages through a series of :func:`asyncio.coroutine`
+Doozer operates on messages through a series of :func:`asyncio.coroutine`
 callback functions. Each callback type serves a unique purpose.
 
 ``callback``

@@ -1,4 +1,4 @@
-"""Henson."""
+"""Doozer."""
 
 import os as _os
 import pkg_resources as _pkg_resources

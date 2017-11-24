@@ -1,4 +1,4 @@
-from henson import Abort, Application
+from doozer import Abort, Application
 
 class FileConsumer:
     """Read lines from a file."""

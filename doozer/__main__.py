@@ -1,4 +1,4 @@
-"""Henson package CLI entrypoint."""
+"""Doozer package CLI entrypoint."""
 
 import sys
 

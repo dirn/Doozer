@@ -2,34 +2,34 @@
 API
 ===
 
-Here's the public API for Henson.
+Here's the public API for Doozer.
 
 Application
 ===========
 
-.. autoclass:: henson.base.Application
+.. autoclass:: doozer.base.Application
    :members:
 
 Command Line Interface
 ======================
 
-.. automodule:: henson.cli
+.. automodule:: doozer.cli
    :members:
 
 Configuration
 =============
 
-.. autoclass:: henson.config.Config
+.. autoclass:: doozer.config.Config
    :members:
 
 Exceptions
 ==========
 
-.. automodule:: henson.exceptions
+.. automodule:: doozer.exceptions
    :members:
 
 Extensions
 ==========
 
-.. autoclass:: henson.extensions.Extension
+.. autoclass:: doozer.extensions.Extension
    :members:

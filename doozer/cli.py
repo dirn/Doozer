@@ -1,4 +1,4 @@
-"""Collection of Henson CLI tasks."""
+"""Collection of Doozer CLI tasks."""
 
 from argparse import Action
 from collections import Counter
@@ -25,7 +25,7 @@ __all__ = ('register_commands',)
 
 def register_commands(namespace, functions, namespace_kwargs=None,
                       func_kwargs=None):
-    """Register commands with the henson CLI.
+    """Register commands with the doozer CLI.
 
     The signature of each function provided through ``functions`` will
     be mapped to its command's interface. Any positional arguments in
@@ -64,7 +64,7 @@ def register_commands(namespace, functions, namespace_kwargs=None,
         # alteration.
         spec = inspect.getfullargspec(function)
 
-        # app is registered as an argument to the henson entry point
+        # app is registered as an argument to the doozer entry point
         # directly. If the function accepts it as an argument, we need
         # to make argh think the function accepts a namespace as its
         # only argument, with all arguments being specified through the
@@ -263,7 +263,7 @@ def _import_application(application_path):
             application. It should be in the form of ``PATH[:APP]``.
 
     Returns:
-        Tuple[str, henson.base.Application]: A two-tuple containing the
+        Tuple[str, doozer.base.Application]: A two-tuple containing the
             import path and the imported application.
     """
     # Add the present working directory to the import path so that
@@ -297,13 +297,13 @@ def _import_application(application_path):
         app = getattr(module, app_name)
         # If the attribute specified by app_name is a callable, assume
         # it is an application factory and call it to get an instance of
-        # a Henson application.
+        # a Doozer application.
         if callable(app):
             app = app()
-        # Fail if the attribute specified is not a Henson application
+        # Fail if the attribute specified is not a Doozer application
         if not isinstance(app, Application):
             raise CommandError(
-                'app must be an instance of a Henson application. '
+                'app must be an instance of a Doozer application. '
                 'Got {}'.format(type(app)),
             )
 
@@ -319,7 +319,7 @@ def _import_application(application_path):
         # If there are zero app_candidates, there's nothing to run.
         if not app_candidates:
             raise CommandError(
-                'No Henson application found. Please specify the '
+                'No Doozer application found. Please specify the '
                 'application by name or run a different module.',
             )
 
@@ -327,7 +327,7 @@ def _import_application(application_path):
         # ambiguous.
         if len(app_candidates) > 1:
             raise CommandError(
-                'More than one Henson application found in {}. Please '
+                'More than one Doozer application found in {}. Please '
                 'specify a application by name (probably one of [{}]).'.format(
                     import_path, ', '.join(ac[0] for ac in app_candidates)),
             )

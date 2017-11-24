@@ -1,12 +1,12 @@
-"""Custom exceptions used by Henson."""
+"""Custom exceptions used by Doozer."""
 
 __all__ = ('Abort',)
 
 
 class Abort(Exception):
-    """An exception that signals to Henson to stop processing a message.
+    """An exception that signals to Doozer to stop processing a message.
 
-    When this exception is caught by Henson it will immediately stop
+    When this exception is caught by Doozer it will immediately stop
     processing the message. None of the remaining callbacks will be
     called.
 

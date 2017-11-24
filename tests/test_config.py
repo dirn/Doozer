@@ -1,6 +1,6 @@
 """Test the configuration utility."""
 
-from henson.config import Config
+from doozer.config import Config
 
 
 def test_config_from_mapping():

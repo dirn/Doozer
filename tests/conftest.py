@@ -4,8 +4,8 @@ import asyncio
 
 import pytest
 
-from henson import Application
-from henson.exceptions import Abort
+from doozer import Application
+from doozer.exceptions import Abort
 
 
 class MockApplication(Application):

@@ -2,7 +2,7 @@
 
 import pytest
 
-from henson import Extension
+from doozer import Extension
 
 
 def test_app_access_with_app(test_app):
