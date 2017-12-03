@@ -1,7 +1,7 @@
 Version 1.2.0
 -------------
 
-Release TBD
+Released 2017-12-03
 
 - Unhandled exceptions raised while processing a message will stop the
   application
