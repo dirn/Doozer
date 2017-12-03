@@ -1,10 +1,10 @@
-"""Tests for henson.contrib.sphinx."""
+"""Tests for doozer.contrib.sphinx."""
 
 from docutils.statemachine import StringList
 import pytest
 
-from henson import Extension
-from henson.contrib import sphinx
+from doozer import Extension
+from doozer.contrib import sphinx
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def test_module(modules_tmpdir, test_app):
     """Create a module for a fake extension."""
     fake_extension = modules_tmpdir.join('fake_extension.py')
     fake_extension.write('\n'.join((
-        'from henson import Extension',
+        'from doozer import Extension',
         'class FakeExtension(Extension):',
         '    def register_cli(self): pass',
     )))
@@ -28,41 +28,41 @@ def test_module(modules_tmpdir, test_app):
 
 @pytest.fixture
 def test_directive(test_module):
-    """Return an instance of HensonCLIDirective."""
-    return sphinx.HensonCLIDirective(
-        name='hensoncli',
+    """Return an instance of DoozerCLIDirective."""
+    return sphinx.DoozerCLIDirective(
+        name='doozercli',
         arguments=['fake_extension:FakeExtension'],
         options={},
         content=StringList([], items=[]),
         lineno=1,
         content_offset=0,
-        block_text='.. hensoncli:: fake_extension:FakeExtension\n',
+        block_text='.. doozercli:: fake_extension:FakeExtension\n',
         state=None,
         state_machine=None,
     )
 
 
-def test_hensonclidirective_doesnt_change_prog(test_directive):
-    """Test that HensonCLIDirective.prepare_autoprogram doesn't change prog."""
+def test_doozerclidirective_doesnt_change_prog(test_directive):
+    """Test that DoozerCLIDirective.prepare_autoprogram doesn't change prog."""
     test_directive.options['prog'] = 'testing'
     test_directive.prepare_autoprogram()
     assert test_directive.options['prog'] == 'testing'
 
 
-def test_hensonclidirective_sets_parser(test_directive):
-    """Test that HensonCLIDirective.prepare_autoprogram sets the parser."""
+def test_doozerclidirective_sets_parser(test_directive):
+    """Test that DoozerCLIDirective.prepare_autoprogram sets the parser."""
     test_directive.prepare_autoprogram()
-    assert test_directive.arguments == ('henson.cli:parser',)
+    assert test_directive.arguments == ('doozer.cli:parser',)
 
 
-def test_hensonclidirective_sets_prog(test_directive):
-    """Test that HensonCLIDirective.prepare_autoprogram sets prog."""
+def test_doozerclidirective_sets_prog(test_directive):
+    """Test that DoozerCLIDirective.prepare_autoprogram sets prog."""
     test_directive.prepare_autoprogram()
-    assert test_directive.options['prog'] == 'henson --app APP_PATH'
+    assert test_directive.options['prog'] == 'doozer --app APP_PATH'
 
 
-def test_hensonclidirective_register_cli(test_directive):
-    """Test that HensonCLIDirective.register_cli doesn't fail."""
+def test_doozerclidirective_register_cli(test_directive):
+    """Test that DoozerCLIDirective.register_cli doesn't fail."""
     # This will only test that it runs without raising an exception.
     test_directive.register_cli()
 
@@ -85,5 +85,5 @@ def test_setup():
 
     sphinx.setup(app)
 
-    assert app.directive == 'hensoncli'
-    assert app.cls is sphinx.HensonCLIDirective
+    assert app.directive == 'doozercli'
+    assert app.cls is sphinx.DoozerCLIDirective

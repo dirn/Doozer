@@ -29,7 +29,7 @@ class Application:
             provided before the application can be run.
         callback (Optional[asyncio.coroutine]): A callable object that
             takes two arguments, an instance of
-            :class:`henson.base.Application` and the (possibly)
+            :class:`doozer.base.Application` and the (possibly)
             preprocessed incoming message.  While this isn't required,
             it must be provided before the application can be run.
     """
@@ -73,7 +73,7 @@ class Application:
         Args:
             callback (asyncio.coroutine): A callable object that takes
                 three arguments: an instance of
-                :class:`henson.base.Application`, the incoming message,
+                :class:`doozer.base.Application`, the incoming message,
                 and the exception that was raised. It will be called any
                 time there is an exception while reading a message from
                 the queue.
@@ -93,7 +93,7 @@ class Application:
         Args:
             callback (asyncio.coroutine): A callable object that takes
                 two arguments: an instance of
-                :class:`henson.base.Application` and the original
+                :class:`doozer.base.Application` and the original
                 incoming message as its only argument. It will be called
                 once a message has been fully processed.
 
@@ -112,7 +112,7 @@ class Application:
         Args:
             callback (asyncio.coroutine): A callable object that takes
                 two arguments: an instance of
-                :class:`henson.base.Application` and the incoming
+                :class:`doozer.base.Application` and the incoming
                 message. It will be called for each incoming message
                 with its result being passed to ``callback``.
 
@@ -131,7 +131,7 @@ class Application:
         Args:
             callback (asyncio.coroutine): A callable object that takes
                 two arguments: an instance of
-                :class:`henson.base.Application` and a result of
+                :class:`doozer.base.Application` and a result of
                 processing the incoming message. It will be called for
                 each result returned from ``callback``.
 
@@ -263,7 +263,7 @@ class Application:
 
         Args:
             callback (asyncio.coroutine): A callable object that takes
-                an instance of :class:`~henson.base.Application` as its
+                an instance of :class:`~doozer.base.Application` as its
                 only argument. It will be called once when the
                 application first starts up.
 
@@ -281,7 +281,7 @@ class Application:
 
         Args:
             callback (asyncio.coroutine): A callable object that takes
-                an instance of :class:`~henson.base.Application` as its
+                an instance of :class:`~doozer.base.Application` as its
                 only argument. It will be called once when the
                 application is shutting down.
 
@@ -299,7 +299,7 @@ class Application:
         """Log the aborted message.
 
         Args:
-            exc (henson.exceptions.Abort): The exception to be logged.
+            exc (doozer.exceptions.Abort): The exception to be logged.
         """
         tb = sys.exc_info()[-1]
         stack = traceback.extract_tb(tb, 1)[-1]
@@ -334,7 +334,7 @@ class Application:
         """Read in incoming messages.
 
         Messages will be read from the consumer until it raises an
-        :class:`~henson.exceptions.Abort` exception.
+        :class:`~doozer.exceptions.Abort` exception.
 
         Args:
             queue (asyncio.Queue): Any messages read in by the consumer

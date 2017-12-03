@@ -7,7 +7,7 @@ class Extension:
     """A base class for Hension extensions.
 
     Args:
-        app (Optional[henson.base.Application]): An application instance
+        app (Optional[doozer.base.Application]): An application instance
             that has an attribute named settings that contains a mapping
             of settings to interact with a database.
     """
@@ -21,7 +21,7 @@ class Extension:
         application is usable.
 
         Args:
-            app (Optional[henson.base.Application]): An application
+            app (Optional[doozer.base.Application]): An application
                 instance that will be initialized.
         """
         self._app = None
@@ -60,7 +60,7 @@ class Extension:
         required settings.
 
         Args:
-            app (henson.base.Application): An application instance that
+            app (doozer.base.Application): An application instance that
                 will be initialized.
         """
         for key, value in self.DEFAULT_SETTINGS.items():

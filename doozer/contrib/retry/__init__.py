@@ -1,14 +1,14 @@
-"""Retry plugin for Henson.
+"""Retry plugin for Doozer.
 
-Retry is a plugin to add the ability for Henson to automatically retry
+Retry is a plugin to add the ability for Doozer to automatically retry
 messages that fail to process.
 """
 
 import asyncio
 import time
 
-from henson.exceptions import Abort
-from henson.extensions import Extension
+from doozer.exceptions import Abort
+from doozer.extensions import Extension
 
 __all__ = ('Retry', 'RetryableException')
 
@@ -78,7 +78,7 @@ def _retry(app, message, exc):
     been reached.
 
     Args:
-        app (henson.base.Application): The current application.
+        app (doozer.base.Application): The current application.
         message (dict): The message to be retried.
         exc (Exception): The exception that caused processing the
             message to fail.
@@ -165,7 +165,7 @@ class Retry(Extension):
         """Initialize an ``Application`` instance.
 
         Args:
-            app (henson.base.Application): Application instance to be
+            app (doozer.base.Application): Application instance to be
                 initialized.
 
         Raises:

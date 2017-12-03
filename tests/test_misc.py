@@ -4,7 +4,7 @@ import asyncio
 import asyncio.base_events
 import sys
 
-from henson.base import _new_event_loop
+from doozer.base import _new_event_loop
 
 
 def test_new_event_loop(monkeypatch, request):

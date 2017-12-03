@@ -7,7 +7,7 @@ from argh import ArghParser, CommandError
 import pytest
 
 
-from henson import cli, Application
+from doozer import cli, Application
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def good_mock_service(modules_tmpdir, test_app):
     """Create a module for a fake service."""
     good_import = modules_tmpdir.join('good_import.py')
     good_import.write('\n'.join((
-        'from henson import Application',
+        'from doozer import Application',
         getsource(type(test_app)),
         'app = MockApplication()',
         'def create_app(): return MockApplication()',
@@ -48,7 +48,7 @@ def double_mock_service(modules_tmpdir, test_app):
     """Create a module with two fake services."""
     double_service = modules_tmpdir.join('double_service.py')
     double_service.write('\n'.join((
-        'from henson import Application',
+        'from doozer import Application',
         getsource(type(test_app)),
         'app1 = MockApplication()',
         'app2 = MockApplication()',
@@ -91,11 +91,11 @@ def test_import_application_attribute_error():
         cli._import_application('logging:app')
 
 
-def test_import_application_non_henson_app():
+def test_import_application_non_doozer_app():
     """Test that _import_application fails with the incorrect app type."""
     with pytest.raises(CommandError) as e:
         cli._import_application('logging:INFO')
-        assert ("app must be an instance of a Henson application. Got "
+        assert ("app must be an instance of a Doozer application. Got "
                 "<class 'int'>" in e.message)
 
 
@@ -103,14 +103,14 @@ def test_import_application_without_application():
     """Test that _import_applocation fails without an app name or instance."""
     with pytest.raises(CommandError) as e:
         cli._import_application('logging')
-        assert 'No Henson application found' in e.message
+        assert 'No Doozer application found' in e.message
 
 
 def test_import_application_with_two_applications(double_mock_service):
     """Test that _import_application fails with ambiguous app choices."""
     with pytest.raises(CommandError) as e:
         cli._import_application('double_service')
-        assert 'More than one Henson application found' in e.message
+        assert 'More than one Doozer application found' in e.message
 
 
 def test_import_application_app_autodetect(good_mock_service):

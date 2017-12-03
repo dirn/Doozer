@@ -1,4 +1,4 @@
-"""Sphinx contrib plugin for documenting Henson CLI extensions."""
+"""Sphinx contrib plugin for documenting Doozer CLI extensions."""
 
 from sphinxcontrib.autoprogram import AutoprogramDirective
 
@@ -9,17 +9,17 @@ def _import_extension(import_path):
     return getattr(module, extension_name)
 
 
-class HensonCLIDirective(AutoprogramDirective):
+class DoozerCLIDirective(AutoprogramDirective):
     """A Sphinx directive that can be used to document a CLI extension.
 
     This class wraps around
     `autoprogram <https://pythonhosted.org/sphinxcontrib-autoprogram/>`_
     to generate Sphinx documentation for extensions that extend the
-    Henson CLI.
+    Doozer CLI.
 
     .. code::
 
-        .. hensoncli:: henson_database:Database
+        .. doozercli:: doozer_database:Database
            :start_command: db
 
     .. versionadded:: 1.1.0
@@ -33,12 +33,12 @@ class HensonCLIDirective(AutoprogramDirective):
     def prepare_autoprogram(self):
         """Prepare the instance to be run through autoprogram."""
         # Tell autoprogram how to find the argument parser.
-        self.arguments = 'henson.cli:parser',
+        self.arguments = 'doozer.cli:parser',
 
-        # Most Henson CLI extensions will be invoked the same way. The
+        # Most Doozer CLI extensions will be invoked the same way. The
         # extension authors shouldn't have to include that in their
         # Sphinx documentation.
-        self.options.setdefault('prog', 'henson --app APP_PATH')
+        self.options.setdefault('prog', 'doozer --app APP_PATH')
 
     def register_cli(self):
         """Register the CLI."""
@@ -56,4 +56,4 @@ class HensonCLIDirective(AutoprogramDirective):
 
 def setup(app):
     """Register the extension."""
-    app.add_directive('hensoncli', HensonCLIDirective)
+    app.add_directive('doozercli', DoozerCLIDirective)

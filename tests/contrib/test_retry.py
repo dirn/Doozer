@@ -1,4 +1,4 @@
-"""Test for henson.contrib.retry."""
+"""Test for doozer.contrib.retry."""
 
 import asyncio
 from contextlib import suppress
@@ -6,8 +6,8 @@ import time
 
 import pytest
 
-from henson.contrib import retry
-from henson.exceptions import Abort
+from doozer.contrib import retry
+from doozer.exceptions import Abort
 
 
 @pytest.mark.parametrize('delay, backoff, count, expected', (

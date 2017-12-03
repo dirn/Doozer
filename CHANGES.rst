@@ -6,6 +6,8 @@ Release TBD
 - Unhandled exceptions raised while processing a message will stop the
   application
 - Set the event loop when running with the reloader
+- Renamed to Doozer
+- Relicensed under `MIT License`_
 
 Version 1.1.0
 -------------
@@ -32,4 +34,5 @@ Released 2016-03-01
 
 - Initial release
 
+.. _MIT License: https://choosealicense.com/licenses/mit/
 .. _uvloop: https://uvloop.readthedocs.io

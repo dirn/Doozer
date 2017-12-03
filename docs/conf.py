@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Henson documentation build configuration file, created by
+# Doozer documentation build configuration file, created by
 # sphinx-quickstart on Tue May 12 10:32:46 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'henson.contrib.sphinx',
+    'doozer.contrib.sphinx',
     'sphinxcontrib.autoprogram',
 ]
 
@@ -56,16 +56,16 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Henson'
-copyright = '2015-2016, iHeartRadio'
-author = 'iHeartRadio'
+project = 'Doozer'
+copyright = '2017, Andy Dirnberger and Jon Banafato'
+author = 'Andy Dirnberger, Jon Banafato, and others'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = pkg_resources.get_distribution('henson').version
+release = pkg_resources.get_distribution('doozer').version
 # The short X.Y version.
 version = release.rsplit('.', 1)[0]
 
@@ -210,7 +210,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Hensondoc'
+htmlhelp_basename = 'Doozerdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -232,8 +232,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'Henson.tex', 'Henson Documentation',
-   'iHeartRadio', 'manual'),
+  (master_doc, 'Doozer.tex', 'Doozer Documentation',
+   'Andy Dirnberger, Jon Banafato, and others', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -262,7 +262,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'Henson', 'Henson Documentation',
+    (master_doc, 'Doozer', 'Doozer Documentation',
      [author], 1)
 ]
 
@@ -276,8 +276,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'Henson', 'Henson Documentation',
-   author, 'Henson', 'One line description of project.',
+  (master_doc, 'Doozer', 'Doozer Documentation',
+   author, 'Doozer', 'One line description of project.',
    'Miscellaneous'),
 ]
 

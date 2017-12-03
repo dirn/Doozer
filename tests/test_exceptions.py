@@ -1,9 +1,9 @@
-"""Test Henson's exceptions."""
+"""Test Doozer's exceptions."""
 
 import asyncio
 
-from henson import exceptions
-from henson.base import Application
+from doozer import exceptions
+from doozer.base import Application
 
 
 def test_abort_preprocessor(event_loop, cancelled_future, queue):

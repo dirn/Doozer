@@ -18,15 +18,16 @@ def read(filename):
     with open(filename) as f:
         return f.read()
 
+
 setup(
-    name='Henson',
+    name='Doozer',
     version='1.2.0',
     author='Andy Dirnberger, Jon Banafato, and others',
-    author_email='henson@iheart.com',
-    url='https://henson.readthedocs.io',
+    author_email='andy@dirnberger.me',
+    url='https://doozer.readthedocs.io',
     description='A framework for running a Python service driven by a consumer',
     long_description=read('README.rst'),
-    license='Apache License, Version 2.0',
+    license='MIT',
     packages=find_packages(exclude=['tests']),
     zip_safe=False,
     install_requires=[
@@ -48,12 +49,12 @@ setup(
     },
     entry_points='''
         [console_scripts]
-        henson=henson.cli:main
+        doozer=doozer.cli:main
     ''',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Programming Language :: Python',

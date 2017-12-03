@@ -4,8 +4,8 @@ import asyncio
 
 import pytest
 
-from henson.base import Application
-from henson.exceptions import Abort
+from doozer.base import Application
+from doozer.exceptions import Abort
 
 
 @pytest.mark.asyncio
