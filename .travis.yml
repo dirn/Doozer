@@ -11,6 +11,8 @@ matrix:
     - python: 3.6
       env: TOX_ENV=docs
     - python: 3.6
+      env: TOX_ENV=manifest
+    - python: 3.6
       env: TOX_ENV=pep8
 
 install: pip install tox
