@@ -74,7 +74,7 @@ class Extension:
                 '{} requires the following missing settings: {}'.format(
                     self.__class__.__name__,
                     ', '.join(str(key) for key in missing_settings),
-                )
+                ),
             )
 
         if hasattr(self, 'register_cli'):
