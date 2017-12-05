@@ -1,12 +1,15 @@
-include AUTHORS.rst
-include LICENSE
-include README.rst
+include LICENSE *.rst
 
-recursive-include docs Makefile *.py *.rst
-
+# Tests
+include tox.ini .coveragerc conftest.py *-requirements.txt
+recursive-include tests *.py
 exclude .coveragerc
 exclude .travis.yml
-exclude tox.ini
 
+# Documentation
+include docs/Makefile docs/docutils.conf
+recursive-include docs *.png
+recursive-include docs *.svg
+recursive-include docs *.py
+recursive-include docs *.rst
 prune docs/_build
-prune tests
