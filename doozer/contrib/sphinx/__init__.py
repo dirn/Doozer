@@ -2,10 +2,13 @@
 
 from sphinxcontrib.autoprogram import AutoprogramDirective
 
+from doozer import Application
+from doozer.extensions import Extension
 
-def _import_extension(import_path):
+
+def _import_extension(import_path: str) -> Extension:
     module_name, extension_name = import_path.split(':', 1)
-    module = __import__(module_name, None, None, [extension_name])
+    module = __import__(module_name, fromlist=[extension_name])
     return getattr(module, extension_name)
 
 
@@ -28,7 +31,7 @@ class DoozerCLIDirective(AutoprogramDirective):
         command line extensions.
     """
 
-    def prepare_autoprogram(self):
+    def prepare_autoprogram(self) -> None:
         """Prepare the instance to be run through autoprogram."""
         # Tell autoprogram how to find the argument parser.
         self.arguments = 'doozer.cli:parser',
@@ -38,13 +41,13 @@ class DoozerCLIDirective(AutoprogramDirective):
         # Sphinx documentation.
         self.options.setdefault('prog', 'doozer --app APP_PATH')
 
-    def register_cli(self):
+    def register_cli(self) -> None:
         """Register the CLI."""
         import_path, = self.arguments
         extension = _import_extension(import_path)
         extension().register_cli()
 
-    def run(self):
+    def run(self) -> None:
         """Register the CLI and run autoprogram."""
         self.register_cli()
         self.prepare_autoprogram()
@@ -52,6 +55,6 @@ class DoozerCLIDirective(AutoprogramDirective):
         return super().run()
 
 
-def setup(app):
+def setup(app: Application) -> None:
     """Register the extension."""
     app.add_directive('doozercli', DoozerCLIDirective)

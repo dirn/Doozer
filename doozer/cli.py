@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 from threading import Thread
+from typing import Any, Callable, Dict, List, no_type_check
 
 from argh import ArghParser, CommandError
 from argh.decorators import arg, expects_obj
@@ -23,8 +24,12 @@ from .base import Application, _new_event_loop
 __all__ = ('register_commands',)
 
 
-def register_commands(namespace, functions, namespace_kwargs=None,
-                      func_kwargs=None):
+def register_commands(
+        namespace: str,
+        functions: List[Callable],
+        namespace_kwargs: Dict[str, Any] = None,
+        func_kwargs: Dict[str. Any] = None,
+) -> None:
     """Register commands with the doozer CLI.
 
     The signature of each function provided through ``functions`` will
@@ -37,11 +42,11 @@ def register_commands(namespace, functions, namespace_kwargs=None,
     command line.
 
     Args:
-        namespace (str): A name representing the group of commands. The
+        namespace: A name representing the group of commands. The
             namespace is required to access the commands being added.
-        functions (List[callable]): A list of callables that are used to
-            create subcommands. More details can be found in the
-            documentation for :func:`~argh.assembling.add_commands`.
+        functions: A list of callables that are used to create
+            subcommands. More details can be found in the documentation
+            for :func:`~argh.assembling.add_commands`.
 
     .. note::
 
@@ -172,11 +177,14 @@ def register_commands(namespace, functions, namespace_kwargs=None,
     )
 
 
-def run(application_path: 'the path to the application to run',
+@no_type_check
+def run(
+        application_path: 'the path to the application to run',
         reloader: 'reload the application on changes' = False,
         workers: 'the number of asynchronous tasks to run' = 1,
         debug: 'enable debug mode' = False,
-        **kwargs):
+        **kwargs
+):
     """Import and run an application."""
     if kwargs['quiet']:
         # If quiet mode has been enabled, set the number of verbose
