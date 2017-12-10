@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 from threading import Thread
+from typing import Any, Callable, Dict, Sequence, Tuple, no_type_check
 
 from argh import ArghParser, CommandError
 from argh.decorators import arg, expects_obj
@@ -23,8 +24,12 @@ from .base import Application, _new_event_loop
 __all__ = ('register_commands',)
 
 
-def register_commands(namespace, functions, namespace_kwargs=None,
-                      func_kwargs=None):
+def register_commands(
+        namespace: str,
+        functions: Sequence[Callable],
+        namespace_kwargs: Dict[str, Any] = None,
+        func_kwargs: Dict[str, Any] = None,
+) -> None:
     """Register commands with the doozer CLI.
 
     The signature of each function provided through ``functions`` will
@@ -37,11 +42,11 @@ def register_commands(namespace, functions, namespace_kwargs=None,
     command line.
 
     Args:
-        namespace (str): A name representing the group of commands. The
+        namespace: A name representing the group of commands. The
             namespace is required to access the commands being added.
-        functions (List[callable]): A list of callables that are used to
-            create subcommands. More details can be found in the
-            documentation for :func:`~argh.assembling.add_commands`.
+        functions: A list of callables that are used to create
+            subcommands. More details can be found in the documentation
+            for :func:`~argh.assembling.add_commands`.
 
     .. note::
 
@@ -172,11 +177,16 @@ def register_commands(namespace, functions, namespace_kwargs=None,
     )
 
 
-def run(application_path: 'the path to the application to run',
+# Rather than using type annotations, this provides CLI help
+# information. It will fail if type checked.
+@no_type_check
+def run(
+        application_path: 'the path to the application to run',
         reloader: 'reload the application on changes' = False,
         workers: 'the number of asynchronous tasks to run' = 1,
         debug: 'enable debug mode' = False,
-        **kwargs):
+        **kwargs,
+):
     """Import and run an application."""
     if kwargs['quiet']:
         # If quiet mode has been enabled, set the number of verbose
@@ -253,16 +263,16 @@ def main():
     return parser.dispatch()
 
 
-def _import_application(application_path):
+def _import_application(application_path: str) -> Tuple[str, Application]:
     """Return the imported application and the path to it.
 
     Args:
-        application_path (str): The path to use to import the
-            application. It should be in the form of ``PATH[:APP]``.
+        application_path: The path to use to import the application. It
+            should be in the form of ``PATH[:APP]``.
 
     Returns:
-        Tuple[str, doozer.base.Application]: A two-tuple containing the
-            import path and the imported application.
+        A two-tuple containing the import path and the imported
+            application.
     """
     # Add the present working directory to the import path so that
     # services can be found without installing them to site-packages
