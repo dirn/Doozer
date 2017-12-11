@@ -22,8 +22,6 @@ class DoozerCLIDirective(AutoprogramDirective):
         .. doozercli:: doozer_database:Database
            :start_command: db
 
-    .. versionadded:: 1.1.0
-
     .. versionchanged:: 1.2.0
 
         The ``prog`` option will default to the proper way to invoke

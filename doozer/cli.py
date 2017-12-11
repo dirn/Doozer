@@ -48,8 +48,6 @@ def register_commands(namespace, functions, namespace_kwargs=None,
         This function is a wrapper around
         :func:`~argh.assembling.add_commands`. Please refer to its
         documentation for any arguments not explained here.
-
-    .. versionadded:: 1.1.0
     """
     commands = []
 
