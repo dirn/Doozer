@@ -8,13 +8,6 @@ the message received to a callback for processing. The messsage can be
 processed before handing it off to the callback, and the callback's results can
 be processed after they are returned to the application.
 
-.. note::
-
-    This documentation uses the ``async``/``await`` syntax introduced to Python
-    3.5 by way of `PEP 492 <https://www.python.org/dev/peps/pep-0492/>`_. If you
-    are using an older version of Python, replace ``async`` with the
-    ``@asyncio.coroutine`` decorator and ``await`` with ``yield from``.
-
 Installation
 ============
 
