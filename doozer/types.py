@@ -3,7 +3,7 @@
 import asyncio
 from typing import Any, Awaitable, Callable
 
-from typing_extensions import Protocol
+from typing_extensions import Protocol, runtime
 
 __all__ = ('Callback', 'Consumer')
 
@@ -11,6 +11,7 @@ __all__ = ('Callback', 'Consumer')
 Callback = Callable[..., Awaitable]
 
 
+@runtime
 class Consumer(Protocol):
     """An implementation of the Consumer Interface."""
 

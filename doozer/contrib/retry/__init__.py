@@ -5,47 +5,44 @@ messages that fail to process.
 """
 
 import asyncio
-from numbers import Number
 import time
-from typing import Any, Dict, Generator, cast
 
-from doozer import Application
 from doozer.exceptions import Abort
 from doozer.extensions import Extension
 
 __all__ = ('Retry', 'RetryableException')
 
 
-def _calculate_delay(
-        delay: Number,
-        backoff: Number,
-        number_of_retries: int,
-) -> Number:
+def _calculate_delay(delay, backoff, number_of_retries):
     """Return the time to wait before retrying.
 
     Args:
-        delay: The base amount of time, in seconds, by which to delay
-            the retry.
-        backoff: The factor by which each retry should be extended.
-        number_of_retries: The number of retry attempts already made.
+        delay (numbers.Number): The base amount of time, in seconds, by
+            which to delay the retry.
+        backoff (numbers.Number): The factor by which each retry should
+            be extended.
+        number_of_retries (int): The number of retry attempts already
+            made.
 
     Returns:
-        The amount of time to wait.
+        numbers.Number: The amount of time to wait.
     """
-    backoff_factor = cast(int, backoff) ** number_of_retries
+    backoff_factor = backoff ** number_of_retries
     return delay * backoff_factor
 
 
-def _exceeded_threshold(number_of_retries: int, maximum_retries: int) -> bool:
+def _exceeded_threshold(number_of_retries, maximum_retries):
     """Return True if the number of retries has been exceeded.
 
     Args:
-        number_of_retries: The number of retry attempts made already.
-        maximum_retries: The maximum number of retry attempts to make.
+        number_of_retries (int): The number of retry attempts made
+            already.
+        maximum_retries (int): The maximum number of retry attempts to
+            make.
 
     Returns:
-        True if the maximum number of retry attempts have already been
-            made.
+        bool: True if the maximum number of retry attempts have already
+            been made.
     """
     if maximum_retries is None:
         # Retry forever.
@@ -54,15 +51,15 @@ def _exceeded_threshold(number_of_retries: int, maximum_retries: int) -> bool:
     return number_of_retries >= maximum_retries
 
 
-def _exceeded_timeout(start_time: int, duration: int) -> bool:
+def _exceeded_timeout(start_time, duration):
     """Return True if the timeout has been exceeded.
 
     Args:
-        start_time: The timestamp of the first retry attempt.
-        duration: The total number of seconds to retry for.
+        start_time (int): The timestamp of the first retry attempt.
+        duration (int): The total number of seconds to retry for.
 
     Returns:
-        True if the timeout has passed.
+        bool: True if the timeout has passed.
     """
     if duration is None:
         # Retry forever.
@@ -72,11 +69,7 @@ def _exceeded_timeout(start_time: int, duration: int) -> bool:
     return start_time + (duration * 1000) <= int(time.time())
 
 
-async def _retry(
-        app: Application,
-        message: Dict[str, Any],
-        exc: Exception,
-) -> Generator:
+async def _retry(app, message, exc):
     """Retry the message.
 
     An exception that is included as a retryable type will result in the
@@ -84,9 +77,10 @@ async def _retry(
     been reached.
 
     Args:
-        app: The current application.
-        message: The message to be retried.
-        exc: The exception that caused processing the message to fail.
+        app (doozer.base.Application): The current application.
+        message (dict): The message to be retried.
+        exc (Exception): The exception that caused processing the
+            message to fail.
 
     Raises:
         Abort: If the message is scheduled to be retried.
@@ -132,14 +126,14 @@ async def _retry(
     raise Abort('message.retried', message)
 
 
-def _retry_info(message: Dict[str, Any]) -> Dict[str, Any]:
+def _retry_info(message):
     """Return the retry attempt information.
 
     Args:
-        message: The message to be retried.
+        message (dict): The message to be retried.
 
     Returns:
-        The retry attempt information.
+        dict: The retry attempt information.
     """
     info = message.get('_retry', {})
     info.setdefault('count', 0)
@@ -166,11 +160,12 @@ class Retry(Extension):
         'RETRY_CALLBACK',
     )
 
-    def init_app(self, app: Application) -> None:
+    def init_app(self, app):
         """Initialize an ``Application`` instance.
 
         Args:
-            app: Application instance to be initialized.
+            app (doozer.base.Application): Application instance to be
+                initialized.
 
         Raises:
             TypeError: If the callback isn't a coroutine.

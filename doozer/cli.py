@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 from threading import Thread
-from typing import Any, Callable, Dict, List, no_type_check
+from typing import Any, Callable, Dict, Sequence, Tuple, no_type_check
 
 from argh import ArghParser, CommandError
 from argh.decorators import arg, expects_obj
@@ -26,9 +26,9 @@ __all__ = ('register_commands',)
 
 def register_commands(
         namespace: str,
-        functions: List[Callable],
+        functions: Sequence[Callable],
         namespace_kwargs: Dict[str, Any] = None,
-        func_kwargs: Dict[str. Any] = None,
+        func_kwargs: Dict[str, Any] = None,
 ) -> None:
     """Register commands with the doozer CLI.
 
@@ -53,6 +53,8 @@ def register_commands(
         This function is a wrapper around
         :func:`~argh.assembling.add_commands`. Please refer to its
         documentation for any arguments not explained here.
+
+    .. versionadded:: 1.1.0
     """
     commands = []
 
@@ -261,16 +263,16 @@ def main():
     return parser.dispatch()
 
 
-def _import_application(application_path):
+def _import_application(application_path: str) -> Tuple[str, Application]:
     """Return the imported application and the path to it.
 
     Args:
-        application_path (str): The path to use to import the
-            application. It should be in the form of ``PATH[:APP]``.
+        application_path: The path to use to import the application. It
+            should be in the form of ``PATH[:APP]``.
 
     Returns:
-        Tuple[str, doozer.base.Application]: A two-tuple containing the
-            import path and the imported application.
+        A two-tuple containing the import path and the imported
+            application.
     """
     # Add the present working directory to the import path so that
     # services can be found without installing them to site-packages
