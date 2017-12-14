@@ -10,26 +10,24 @@ from doozer.exceptions import Abort
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('original, expected', ((1, 4), (2, 6)))
-def test_apply_callbacks(original, expected):
+async def test_apply_callbacks(original, expected):
     """Test Application._apply_callbacks."""
     callback1_called = False
     callback2_called = False
 
-    @asyncio.coroutine
-    def callback1(app, message):
+    async def callback1(app, message):
         nonlocal callback1_called
         callback1_called = True
         return message + 1
 
-    @asyncio.coroutine
-    def callback2(app, message):
+    async def callback2(app, message):
         nonlocal callback2_called
         callback2_called = True
         return message * 2
 
     app = Application('testing')
 
-    actual = yield from app._apply_callbacks([callback1, callback2], original)
+    actual = await app._apply_callbacks([callback1, callback2], original)
     assert actual == expected
 
     assert callback1_called
@@ -58,18 +56,16 @@ def test_consumer_aborts(event_loop):
     callback_called = False
 
     class Consumer:
-        @asyncio.coroutine
-        def read(self):
+        async def read(self):
             nonlocal consumer_called
             consumer_called = True
             raise Abort('reason', 'message')
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
         while True:
-            yield from asyncio.sleep(0)
+            await asyncio.sleep(0)
 
     app = Application('testing', consumer=Consumer(), callback=callback)
     app.run_forever(loop=event_loop)
@@ -84,14 +80,12 @@ def test_consumer_exception(event_loop):
     callback_called = False
 
     class Consumer:
-        @asyncio.coroutine
-        def read(self):
+        async def read(self):
             nonlocal consumer_called
             consumer_called = True
             raise Exception()
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
 
@@ -144,13 +138,11 @@ def test_message_acknowledgement_original_message(event_loop, coroutine,
     app = Application('testing', callback=coroutine)
 
     @app.message_preprocessor
-    @asyncio.coroutine
-    def preprocess(app, message):
+    async def preprocess(app, message):
         return 'changed'
 
     @app.message_acknowledgement
-    @asyncio.coroutine
-    def acknowledge(app, message):
+    async def acknowledge(app, message):
         nonlocal actual
         actual = message
 
@@ -170,7 +162,7 @@ def test_message_preprocessor_not_coroutine_typeerror(preprocess):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('original, expected', ((1, 2), (2, 3)))
-def test_postprocess_results(original, expected):
+async def test_postprocess_results(original, expected):
     """Test Application._postprocess_results."""
     callback1_called = False
     callback2_called = False
@@ -178,22 +170,20 @@ def test_postprocess_results(original, expected):
     app = Application('testing')
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def callback1(app, message):
+    async def callback1(app, message):
         nonlocal callback1_called
         callback1_called = True
         return message + 1
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def callback2(app, message):
+    async def callback2(app, message):
         nonlocal callback2_called
         callback2_called = True
         # Nothing is returned out of Application._postprocess_results so
         # the assertion needs to happen inside a callback.
         assert message == expected
 
-    yield from app._postprocess_results([original])
+    await app._postprocess_results([original])
 
     assert callback1_called
     assert callback2_called
@@ -201,15 +191,13 @@ def test_postprocess_results(original, expected):
 
 def test_process_exception_stops_application(event_loop, test_consumer):
     """Test that the application stops after a processing exception."""
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         return [{}]
 
     app = Application('testing', consumer=test_consumer, callback=callback)
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess(app, message):
+    async def postprocess(app, message):
         raise Exception()
 
     with pytest.raises(Exception):
@@ -249,8 +237,7 @@ def test_run_forever(event_loop, test_consumer_with_abort):
     acknowledgement_called = False
     teardown_called = False
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
         return [message + 1]
@@ -262,33 +249,28 @@ def test_run_forever(event_loop, test_consumer_with_abort):
     )
 
     @app.startup
-    @asyncio.coroutine
-    def startup(app):
+    async def startup(app):
         nonlocal startup_called
         startup_called = True
 
     @app.message_preprocessor
-    @asyncio.coroutine
-    def preprocess(app, message):
+    async def preprocess(app, message):
         nonlocal preprocess_called
         preprocess_called = True
         return message + 1
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess(app, result):
+    async def postprocess(app, result):
         nonlocal postprocess_called
         postprocess_called = True
 
     @app.message_acknowledgement
-    @asyncio.coroutine
-    def acknowledge(app, message):
+    async def acknowledge(app, message):
         nonlocal acknowledgement_called
         acknowledgement_called = True
 
     @app.teardown
-    @asyncio.coroutine
-    def teardown(app):
+    async def teardown(app):
         nonlocal teardown_called
         teardown_called = True
 
