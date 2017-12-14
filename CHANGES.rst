@@ -1,7 +1,9 @@
-Version 1.3.0
+Version 2.0.0
 -------------
 
 Release TBD
+
+- Drop support for Python 3.4 and 3.5 *(backwards incompatible)*
 
 Version 1.2.0
 -------------
