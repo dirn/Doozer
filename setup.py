@@ -21,7 +21,7 @@ def read(filename):
 
 setup(
     name='Doozer',
-    version='1.3.0',
+    version='2.0.0',
     author='Andy Dirnberger, Jon Banafato, and others',
     author_email='andy@dirnberger.me',
     url='https://doozer.readthedocs.io',
