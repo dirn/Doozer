@@ -185,7 +185,7 @@ def run(
         reloader: 'reload the application on changes' = False,
         workers: 'the number of asynchronous tasks to run' = 1,
         debug: 'enable debug mode' = False,
-        **kwargs
+        **kwargs,
 ):
     """Import and run an application."""
     if kwargs['quiet']:

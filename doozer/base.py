@@ -1,13 +1,17 @@
 """Implementation of the service."""
 
 import asyncio
+from asyncio import AbstractEventLoop, Future, Queue
 from contextlib import suppress
 from copy import deepcopy
 import logging
 import sys
 import traceback
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, NoReturn, Optional
 
+# doozer.extensions.Extension is needed for a forward reference in an
+# annotation.
+from . import extensions  # NOQA: F401
 from .config import Config
 from .exceptions import Abort
 from .types import Callback, Consumer
@@ -41,7 +45,7 @@ class Application:
             settings: Optional[Any] = None,
             *,
             consumer: Optional[Consumer] = None,
-            callback: Optional[Callback] = None
+            callback: Optional[Callback] = None,
     ) -> None:
         """Initialize the class."""
         self.name = name
@@ -54,7 +58,7 @@ class Application:
 
         # Callbacks
         self.callback = callback
-        self._callbacks = {
+        self._callbacks: Dict[str, List[Callback]] = {
             'error': [],
             'message_acknowledgement': [],
             'message_preprocessor': [],
@@ -63,7 +67,7 @@ class Application:
             'teardown': [],
         }
 
-        self.extensions = {}
+        self.extensions: Dict[str, 'extensions.Extension'] = {}
 
         self.consumer = consumer
 
@@ -75,19 +79,18 @@ class Application:
     def __repr__(self):
         return '<Application: {}>'.format(self)
 
-    def error(self, callback):
+    def error(self, callback: Callback) -> Callback:
         """Register an error callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                three arguments: an instance of
-                :class:`doozer.base.Application`, the incoming message,
-                and the exception that was raised. It will be called any
-                time there is an exception while reading a message from
-                the queue.
+            callback: A callable object that takes three arguments: an
+                instance of :class:`doozer.base.Application`, the
+                incoming message, and the exception that was raised. It
+                will be called any time there is an exception while
+                reading a message from the queue.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -95,18 +98,17 @@ class Application:
         self._register_callback(callback, 'error')
         return callback
 
-    def message_acknowledgement(self, callback):
+    def message_acknowledgement(self, callback: Callback) -> Callback:
         """Register a message acknowledgement callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                two arguments: an instance of
-                :class:`doozer.base.Application` and the original
-                incoming message as its only argument. It will be called
-                once a message has been fully processed.
+            callback: A callable object that takes two arguments: an
+                instance of :class:`doozer.base.Application` and the
+                original incoming message as its only argument. It will
+                be called once a message has been fully processed.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -114,18 +116,17 @@ class Application:
         self._register_callback(callback, 'message_acknowledgement')
         return callback
 
-    def message_preprocessor(self, callback):
+    def message_preprocessor(self, callback: Callback) -> Callback:
         """Register a message preprocessing callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                two arguments: an instance of
-                :class:`doozer.base.Application` and the incoming
-                message. It will be called for each incoming message
-                with its result being passed to ``callback``.
+            callback: A callable object that takes two arguments: an
+                instance of :class:`doozer.base.Application` and the
+                incoming message. It will be called for each incoming
+                message with its result being passed to ``callback``.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -133,18 +134,17 @@ class Application:
         self._register_callback(callback, 'message_preprocessor')
         return callback
 
-    def result_postprocessor(self, callback):
+    def result_postprocessor(self, callback: Callback) -> Callback:
         """Register a result postprocessing callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                two arguments: an instance of
-                :class:`doozer.base.Application` and a result of
-                processing the incoming message. It will be called for
-                each result returned from ``callback``.
+            callback: A callable object that takes two arguments: an
+                instance of :class:`doozer.base.Application` and a
+                result of processing the incoming message. It will be
+                called for each result returned from ``callback``.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -152,19 +152,23 @@ class Application:
         self._register_callback(callback, 'result_postprocessor')
         return callback
 
-    def run_forever(self, num_workers=1, loop=None, debug=False):
+    def run_forever(
+            self,
+            num_workers: int = 1,
+            loop: Optional[AbstractEventLoop] = None,
+            debug: bool = False,
+    ) -> NoReturn:
         """Consume from the consumer until interrupted.
 
         Args:
-            num_workers (Optional[int]): The number of asynchronous
-                tasks to use to process messages received through the
-                consumer.  Defaults to 1.
-            loop (Optional[asyncio.asyncio.BaseEventLoop]): An event
-                loop that, if provided, will be used for running the
-                application. If none is provided, the default event loop
-                will be used.
-            debug (Optional[bool]): Whether or not to run with debug
-                mode enabled. Defaults to True.
+            num_workers: The number of asynchronous tasks to use to
+                process messages received through the consumer.
+                Defaults to 1.
+            loop: An event loop that, if provided, will be used for
+                running the application. If none is provided, the
+                default event loop will be used.
+            debug: Whether or not to run with debug mode enabled.
+                Defaults to True.
 
         Raises:
             TypeError: If the consumer is None or the callback isn't a
@@ -234,8 +238,8 @@ class Application:
             # Run the loop until the consumer says to stop or message
             # processing fails.
             loop.run_until_complete(asyncio.gather(consumer, future))
-        except BaseException as e:
-            self.logger.error(e)
+        except BaseException:
+            self.logger.exception('loop.canceled')
         finally:
             # If something went wrong while processing the message,
             # cancel the consumer. This will alert the processors to
@@ -251,7 +255,7 @@ class Application:
             # tasks inside the future.
             exc = future.exception()
             if exc:
-                self.logger.error(exc)
+                self.logger.exception('tasks.erred', exc_info=exc)
 
             # Teardown
             tasks = [
@@ -266,17 +270,17 @@ class Application:
 
         self.logger.debug('application.stopped')
 
-    def startup(self, callback):
+    def startup(self, callback: Callback) -> Callback:
         """Register a startup callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                an instance of :class:`~doozer.base.Application` as its
-                only argument. It will be called once when the
-                application first starts up.
+            callback: A callable object that takes an instance of
+                :class:`~doozer.base.Application` as its only argument.
+                It will be called once when the application first starts
+                up.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -284,17 +288,17 @@ class Application:
         self._register_callback(callback, 'startup')
         return callback
 
-    def teardown(self, callback):
+    def teardown(self, callback: Callback) -> Callback:
         """Register a teardown callback.
 
         Args:
-            callback (asyncio.coroutine): A callable object that takes
-                an instance of :class:`~doozer.base.Application` as its
-                only argument. It will be called once when the
-                application is shutting down.
+            callback: A callable object that takes an instance of
+                :class:`~doozer.base.Application` as its only argument.
+                It will be called once when the application is shutting
+                down.
 
         Returns:
-            asyncio.coroutine: The callback.
+            The callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -302,11 +306,11 @@ class Application:
         self._register_callback(callback, 'teardown')
         return callback
 
-    async def _abort(self, exc):
+    async def _abort(self, exc: Abort) -> None:
         """Log the aborted message.
 
         Args:
-            exc (doozer.exceptions.Abort): The exception to be logged.
+            exc: The exception to be logged.
         """
         tb = sys.exc_info()[-1]
         stack = traceback.extract_tb(tb, 1)[-1]
@@ -316,7 +320,11 @@ class Application:
             'aborted_by': stack,
         })
 
-    async def _apply_callbacks(self, callbacks, value):
+    async def _apply_callbacks(
+        self,
+        callbacks: List[Callback],
+        value: Any,
+    ) -> Any:
         """Apply callbacks to a set of arguments.
 
         The callbacks will be called in the order in which they are
@@ -335,16 +343,16 @@ class Application:
             value = await callback(self, value)
         return value
 
-    async def _consume(self, queue):
+    async def _consume(self, queue: Queue) -> None:
         """Read in incoming messages.
 
         Messages will be read from the consumer until it raises an
         :class:`~doozer.exceptions.Abort` exception.
 
         Args:
-            queue (asyncio.Queue): Any messages read in by the consumer
-                will be added to the queue to share them with any future
-                processing the messages.
+            queue: Any messages read in by the consumer will be added to
+                the queue to share them with any future processing the
+                messages.
         """
         while True:
             # Read messages and add them to the queue.
@@ -356,17 +364,19 @@ class Application:
             else:
                 await queue.put(value)
 
-    async def _process(self, future, queue, loop):
+    async def _process(
+        self,
+        future: Future,
+        queue: Queue,
+        loop: AbstractEventLoop,
+    ) -> None:
         """Process incoming messages.
 
         Args:
-            future (asyncio.Future): The future that, when done, will
-                indicate that the consumer is no longer receiving new
-                messages.
-            queue (asyncio.Queue): A queue containing incoming messages
-              to be processed.
-            loop (asyncio.asyncio.BaseEventLoop): The event loop used by
-                the application.
+            future: The future that, when done, will indicate that the
+                consumer is no longer receiving new messages.
+            queue: A queue containing incoming messages to be processed.
+            loop: The event loop used by the application.
         """
         while True:
             if queue.empty():
@@ -427,12 +437,11 @@ class Application:
                 del message
                 del original_message
 
-    async def _postprocess_results(self, results):
+    async def _postprocess_results(self, results: Iterable) -> None:
         """Postprocess the results.
 
         Args:
-            results (iterable): The results returned by processing the
-                message.
+            results: The results returned by processing the message.
         """
         if results is None:
             return
@@ -445,13 +454,17 @@ class Application:
             except Abort as e:
                 await self._abort(e)
 
-    def _register_callback(self, callback, callback_container):
+    def _register_callback(
+            self,
+            callback: Callback,
+            callback_container: str,
+    ) -> None:
         """Register a callback.
 
         Args:
-            callback (asyncio.coroutine): The callback to register.
-            callback_container (str): The name of the container onto
-                which to append the callback.
+            callback: The callback to register.
+            callback_container: The name of the container onto which to
+                append the callback.
 
         Raises:
             TypeError: If the callback isn't a coroutine.
@@ -466,7 +479,7 @@ class Application:
             'callback': callback.__qualname__,
         })
 
-    def _teardown(self, future, loop):
+    def _teardown(self, future: Future, loop: AbstractEventLoop) -> None:
         """Tear down the application."""
         tasks = [
             asyncio.async(callback(self), loop=loop) for callback in
@@ -475,7 +488,7 @@ class Application:
         loop.run_until_complete(future)
 
 
-def _new_event_loop():
+def _new_event_loop() -> AbstractEventLoop:
     """Return a new event loop.
 
     If `uvloop <https://uvloop.readthedocs.io>`_ is installed, its event
@@ -484,7 +497,7 @@ def _new_event_loop():
     setting the event loop policy.
 
     Returns:
-        asyncio.AbstractEventLoopPolicy: The new event loop.
+        The new event loop.
     """
     try:
         import uvloop
