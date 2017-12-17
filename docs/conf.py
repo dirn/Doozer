@@ -38,6 +38,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'doozer.contrib.sphinx',
+    'sphinx_autodoc_typehints',
     'sphinxcontrib.autoprogram',
 ]
 
