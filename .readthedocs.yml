@@ -1,0 +1,3 @@
+python:
+  # Build the docs using the lowest supported version of Python.
+  version: 3.6
