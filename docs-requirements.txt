@@ -3,3 +3,5 @@ sphinx>=1.3
 sphinx-autodoc-typehints
 sphinx_rtd_theme
 sphinxcontrib-autoprogram
+# TODO(dirn): Remove this once this job uses 3.7.
+typing-extensions
