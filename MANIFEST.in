@@ -3,7 +3,7 @@ include LICENSE *.rst
 # Tests
 include tox.ini .coveragerc conftest.py *-requirements.txt
 recursive-include tests *.py
-exclude .travis.yml
+exclude .readthedocs.yml .travis.yml
 
 # Documentation
 include docs/Makefile
