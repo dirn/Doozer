@@ -1,4 +1,5 @@
 doc8
 sphinx>=1.3
+sphinx-autodoc-typehints
 sphinx_rtd_theme
 sphinxcontrib-autoprogram

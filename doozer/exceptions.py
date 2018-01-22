@@ -1,5 +1,7 @@
 """Custom exceptions used by Doozer."""
 
+from .types import Message
+
 __all__ = ('Abort',)
 
 
@@ -15,13 +17,13 @@ class Abort(Exception):
     message will still be processed.
 
     Args:
-        reason (str): The reason the message is being aborted. It should
-            be in the form of "noun.verb" (e.g., "provider.ignored").
+        reason: The reason the message is being aborted. It should be in
+            the form of "noun.verb" (e.g., "provider.ignored").
         message: The message that is being aborted. Usually this will be
             the incoming message, but it can also be the result.
     """
 
-    def __init__(self, reason, message):
+    def __init__(self, reason: str, message: Message) -> None:
         """Initialize the class."""
         super().__init__(reason)
         self.message = message

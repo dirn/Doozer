@@ -1,5 +1,11 @@
 """Extension base."""
 
+from typing import Iterable, Mapping, Optional
+
+# doozer.extensions.Extension is needed for a forward reference in an
+# annotation.
+from . import base  # NOQA: F401
+
 __all__ = ('Extension',)
 
 
@@ -12,7 +18,7 @@ class Extension:
             of settings to interact with a database.
     """
 
-    def __init__(self, app=None):
+    def __init__(self, app: Optional['base.Application'] = None) -> None:
         """Initialize an instance of the extension.
 
         If app is provided, init_app will also be called with the
@@ -21,8 +27,7 @@ class Extension:
         application is usable.
 
         Args:
-            app (Optional[doozer.base.Application]): An application
-                instance that will be initialized.
+            app: An application instance that will be initialized.
         """
         self._app = None
 
@@ -30,7 +35,7 @@ class Extension:
             self.init_app(app)
 
     @property
-    def DEFAULT_SETTINGS(self):  # NOQA
+    def DEFAULT_SETTINGS(self) -> Mapping:  # NOQA: N802
         """A ``dict`` of default settings for the extension.
 
         When a setting is not specified by the application instance and
@@ -41,7 +46,7 @@ class Extension:
         return {}
 
     @property
-    def REQUIRED_SETTINGS(self):  # NOQA
+    def REQUIRED_SETTINGS(self) -> Iterable:  # NOQA: N802
         """An ``iterable`` of required settings for the extension.
 
         When an extension has required settings that do not have default
@@ -52,7 +57,7 @@ class Extension:
         """
         return ()
 
-    def init_app(self, app):
+    def init_app(self, app: 'base.Application') -> None:
         """Initialize the application.
 
         In addition to associating the extension's default settings with
@@ -60,8 +65,7 @@ class Extension:
         required settings.
 
         Args:
-            app (doozer.base.Application): An application instance that
-                will be initialized.
+            app: An application instance that will be initialized.
         """
         for key, value in self.DEFAULT_SETTINGS.items():
             app.settings.setdefault(key, value)
@@ -84,7 +88,7 @@ class Extension:
         self._app.extensions[self.__class__.__name__.lower()] = self
 
     @property
-    def app(self):
+    def app(self) -> 'base.Application':
         """Return the registered app."""
         if not self._app:
             raise RuntimeError(
