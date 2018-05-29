@@ -34,7 +34,7 @@ class DoozerCLIDirective(AutoprogramDirective):
     def prepare_autoprogram(self) -> None:
         """Prepare the instance to be run through autoprogram."""
         # Tell autoprogram how to find the argument parser.
-        self.arguments = 'doozer.cli:parser',
+        self.arguments = ('doozer.cli:parser',)
 
         # Most Doozer CLI extensions will be invoked the same way. The
         # extension authors shouldn't have to include that in their

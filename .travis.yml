@@ -7,9 +7,9 @@ matrix:
     - python: 3.6
       env: TOX_ENV=docs
     - python: 3.6
-      env: TOX_ENV=manifest
+      env: TOX_ENV=lint
     - python: 3.6
-      env: TOX_ENV=pep8
+      env: TOX_ENV=manifest
 
 install: pip install tox
 script: tox -e $TOX_ENV
