@@ -26,15 +26,17 @@ def test_app_access_with_no_app_raises_runtimeerror():
 
 def test_extension_registry(test_app):
     """Test that extensions are automatically registered with the app."""
+
     class CustomExtension(Extension):
         pass
 
     extension = CustomExtension(test_app)
-    assert test_app.extensions['customextension'] == extension
+    assert test_app.extensions["customextension"] == extension
 
 
 def test_extension_without_default_settings(test_app):
     """Test that an Extension without DEFAULT_SETTINGS doesn't affect app."""
+
     class CustomExtension(Extension):
         pass
 
@@ -44,17 +46,19 @@ def test_extension_without_default_settings(test_app):
 
 def test_extension_with_default_settings(test_app):
     """Test that an Extension's DEFAULT_SETTINGS populate an app's settings."""
+
     class CustomExtension(Extension):
-        DEFAULT_SETTINGS = {'foo': 'bar'}
+        DEFAULT_SETTINGS = {"foo": "bar"}
 
     CustomExtension(test_app)
-    assert test_app.settings == {'foo': 'bar'}
+    assert test_app.settings == {"foo": "bar"}
 
 
 def test_extension_required_settings_exception(test_app):
     """Test that init_app raises REQUIRED_SETTINGS exceptions."""
+
     class CustomExtension(Extension):
-        REQUIRED_SETTINGS = ('foo', 'bar')
+        REQUIRED_SETTINGS = ("foo", "bar")
 
     with pytest.raises(KeyError):
         CustomExtension(test_app)
@@ -62,9 +66,10 @@ def test_extension_required_settings_exception(test_app):
 
 def test_extension_with_required_settings(test_app):
     """Test that init_app doesn't raise REQUIRED_SETTINGS exceptions."""
-    class CustomExtension(Extension):
-        REQUIRED_SETTINGS = ('foo', 'bar')
 
-    test_app.settings['foo'] = 1
-    test_app.settings['bar'] = 2
+    class CustomExtension(Extension):
+        REQUIRED_SETTINGS = ("foo", "bar")
+
+    test_app.settings["foo"] = 1
+    test_app.settings["bar"] = 2
     CustomExtension(test_app)

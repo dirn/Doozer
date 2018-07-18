@@ -12,14 +12,10 @@ from doozer.base import Application
 from doozer.exceptions import Abort
 from doozer.extensions import Extension
 
-__all__ = ('Retry', 'RetryableException')
+__all__ = ("Retry", "RetryableException")
 
 
-def _calculate_delay(
-        delay: Number,
-        backoff: Number,
-        number_of_retries: int,
-) -> Number:
+def _calculate_delay(delay: Number, backoff: Number, number_of_retries: int) -> Number:
     """Return the time to wait before retrying.
 
     Args:
@@ -90,45 +86,45 @@ async def _retry(app: Application, message: dict, exc: Exception) -> None:
     Raises:
         If the message is scheduled to be retried.
     """
-    if not isinstance(exc, app.settings['RETRY_EXCEPTIONS']):
+    if not isinstance(exc, app.settings["RETRY_EXCEPTIONS"]):
         # If the exception raised isn't retryable, return control so the
         # next error callback can be called.
         return
 
     retry_info = _retry_info(message)
 
-    threshold = app.settings['RETRY_THRESHOLD']
-    if _exceeded_threshold(retry_info['count'], threshold):
+    threshold = app.settings["RETRY_THRESHOLD"]
+    if _exceeded_threshold(retry_info["count"], threshold):
         # If we've exceeded the number of times to retry the message,
         # don't retry it again.
         return
 
-    timeout = app.settings['RETRY_TIMEOUT']
-    if _exceeded_timeout(retry_info['start_time'], timeout):
+    timeout = app.settings["RETRY_TIMEOUT"]
+    if _exceeded_timeout(retry_info["start_time"], timeout):
         # If we've gone past the time to stop retrying, don't retry it
         # again.
         return
 
-    if app.settings['RETRY_DELAY']:
+    if app.settings["RETRY_DELAY"]:
         # If a delay has been specified, calculate the actual delay
         # based on any backoff and then sleep for that long. Add the
         # delay time to the retry information so that it can be used
         # to gain insight into the full history of a retried message.
-        retry_info['delay'] = _calculate_delay(
-            delay=app.settings['RETRY_DELAY'],
-            backoff=app.settings['RETRY_BACKOFF'],
-            number_of_retries=retry_info['count'],
+        retry_info["delay"] = _calculate_delay(
+            delay=app.settings["RETRY_DELAY"],
+            backoff=app.settings["RETRY_BACKOFF"],
+            number_of_retries=retry_info["count"],
         )
-        await asyncio.sleep(retry_info['delay'])
+        await asyncio.sleep(retry_info["delay"])
 
     # Update the retry information and retry the message.
-    retry_info['count'] += 1
-    message['_retry'] = retry_info
-    await app.settings['RETRY_CALLBACK'](app, message)
+    retry_info["count"] += 1
+    message["_retry"] = retry_info
+    await app.settings["RETRY_CALLBACK"](app, message)
 
     # If the exception was retryable, none of the other callbacks should
     # execute.
-    raise Abort('message.retried', message)
+    raise Abort("message.retried", message)
 
 
 def _retry_info(message: dict) -> dict:
@@ -140,9 +136,9 @@ def _retry_info(message: dict) -> dict:
     Returns:
         The retry attempt information.
     """
-    info = message.get('_retry', {})
-    info.setdefault('count', 0)
-    info.setdefault('start_time', int(time.time()))
+    info = message.get("_retry", {})
+    info.setdefault("count", 0)
+    info.setdefault("start_time", int(time.time()))
     return info
 
 
@@ -154,16 +150,14 @@ class Retry(Extension):
     """A class that adds retries to an application."""
 
     DEFAULT_SETTINGS = {
-        'RETRY_BACKOFF': 1,
-        'RETRY_DELAY': 0,
-        'RETRY_EXCEPTIONS': RetryableException,
-        'RETRY_THRESHOLD': None,
-        'RETRY_TIMEOUT': None,
+        "RETRY_BACKOFF": 1,
+        "RETRY_DELAY": 0,
+        "RETRY_EXCEPTIONS": RetryableException,
+        "RETRY_THRESHOLD": None,
+        "RETRY_TIMEOUT": None,
     }
 
-    REQUIRED_SETTINGS = (
-        'RETRY_CALLBACK',
-    )
+    REQUIRED_SETTINGS = ("RETRY_CALLBACK",)
 
     def init_app(self, app: Application) -> None:
         """Initialize an ``Application`` instance.
@@ -177,16 +171,16 @@ class Retry(Extension):
         """
         super().init_app(app)
 
-        if app.settings['RETRY_DELAY'] < 0:
-            raise ValueError('The delay cannot be negative.')
+        if app.settings["RETRY_DELAY"] < 0:
+            raise ValueError("The delay cannot be negative.")
 
-        if app.settings['RETRY_BACKOFF'] < 0:
-            raise ValueError('The backoff cannot be negative.')
+        if app.settings["RETRY_BACKOFF"] < 0:
+            raise ValueError("The backoff cannot be negative.")
 
-        if not asyncio.iscoroutinefunction(app.settings['RETRY_CALLBACK']):
-            raise TypeError('The retry callback is not a coroutine.')
+        if not asyncio.iscoroutinefunction(app.settings["RETRY_CALLBACK"]):
+            raise TypeError("The retry callback is not a coroutine.")
 
         # The retry callback should be executed before all other
         # callbacks. This will ensure that retryable exceptions are
         # retried.
-        app._callbacks['error'].insert(0, _retry)
+        app._callbacks["error"].insert(0, _retry)

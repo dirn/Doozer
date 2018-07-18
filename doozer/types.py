@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Callable
 
 from typing_extensions import Protocol
 
-__all__ = ('Callback', 'Consumer')
+__all__ = ("Callback", "Consumer")
 
 
 Callback = Callable[..., Awaitable]

@@ -2,7 +2,7 @@
 
 from typing import Any, Mapping
 
-__all__ = ('Config',)
+__all__ = ("Config",)
 
 
 class Config(dict):
