@@ -6,8 +6,7 @@ from inspect import getsource
 from argh import ArghParser, CommandError
 import pytest
 
-
-from doozer import cli, Application
+from doozer import Application, cli
 
 
 @pytest.fixture
