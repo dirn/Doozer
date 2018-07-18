@@ -27,7 +27,7 @@ def test_new_event_loop_uvloop(monkeypatch, request):
 
     # Inject the stub uvloop into the imported modules so that we don't
     # actually need to install it to run this test.
-    class uvloop:
+    class uvloop:  # NOQA: N801
         @staticmethod
         def new_event_loop():
             return expected
