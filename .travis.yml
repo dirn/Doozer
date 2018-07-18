@@ -4,6 +4,11 @@ matrix:
   include:
     - python: 3.6
       env: TOX_ENV=py36
+    - python: 3.7
+      env: TOX_ENV=py37
+      dist: xenial
+      # TODO(dirn): Remove this once sudo is no longer required to use 3.7.
+      sudo: true
     - python: 3.6
       env: TOX_ENV=docs
     - python: 3.6
