@@ -17,13 +17,13 @@ class MockApplication(Application):
 
     def __init__(self, **settings):
         """Initialize the instance."""
-        super().__init__('testing')
+        super().__init__("testing")
         self.settings = settings
         self.extensions = {}
 
     def run_forever(self, num_workers=1, loop=None, debug=False):
         """Run the instance."""
-        print('Run, Forrest, run!')
+        print("Run, Forrest, run!")
 
 
 class MockConsumer:
@@ -44,7 +44,7 @@ class MockAbortingConsumer:
     def read(self):
         """Return an item."""
         if self._run:
-            raise Abort('testing', {})
+            raise Abort("testing", {})
 
         self._run = True
         return 1
@@ -61,9 +61,11 @@ def cancelled_future(event_loop):
 @pytest.fixture
 def coroutine():
     """Return a coroutine function."""
+
     @asyncio.coroutine
     def _inner(*args, **kwargs):
         pass
+
     return _inner
 
 
@@ -76,6 +78,7 @@ def queue():
 @pytest.fixture
 def settings():
     """Create a configuration object."""
+
     class Config:
         A = 1
         B = 2

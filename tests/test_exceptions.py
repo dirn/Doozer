@@ -16,7 +16,7 @@ def test_abort_preprocessor(event_loop, cancelled_future, queue):
     callback_called = False
     postprocess_called = False
 
-    queue.put_nowait({'a': 1})
+    queue.put_nowait({"a": 1})
 
     @asyncio.coroutine
     def callback(app, message):
@@ -24,14 +24,14 @@ def test_abort_preprocessor(event_loop, cancelled_future, queue):
         callback_called = True
         return message
 
-    app = Application('testing', callback=callback)
+    app = Application("testing", callback=callback)
 
     @app.message_preprocessor
     @asyncio.coroutine
     def preprocess1(app, message):
         nonlocal preprocess1_called
         preprocess1_called = True
-        raise exceptions.Abort('testing', message)
+        raise exceptions.Abort("testing", message)
 
     @app.message_preprocessor
     @asyncio.coroutine
@@ -47,8 +47,7 @@ def test_abort_preprocessor(event_loop, cancelled_future, queue):
         postprocess_called = True
         return result
 
-    event_loop.run_until_complete(
-        app._process(cancelled_future, queue, event_loop))
+    event_loop.run_until_complete(app._process(cancelled_future, queue, event_loop))
 
     assert preprocess1_called
     assert not preprocess2_called
@@ -64,15 +63,15 @@ def test_abort_callback(event_loop, cancelled_future, queue):
     callback_called = False
     postprocess_called = False
 
-    queue.put_nowait({'a': 1})
+    queue.put_nowait({"a": 1})
 
     @asyncio.coroutine
     def callback(app, message):
         nonlocal callback_called
         callback_called = True
-        raise exceptions.Abort('testing', message)
+        raise exceptions.Abort("testing", message)
 
-    app = Application('testing', callback=callback)
+    app = Application("testing", callback=callback)
 
     @app.result_postprocessor
     @asyncio.coroutine
@@ -81,8 +80,7 @@ def test_abort_callback(event_loop, cancelled_future, queue):
         postprocess_called = True
         return result
 
-    event_loop.run_until_complete(
-        app._process(cancelled_future, queue, event_loop))
+    event_loop.run_until_complete(app._process(cancelled_future, queue, event_loop))
 
     assert callback_called
     assert not postprocess_called
@@ -97,22 +95,22 @@ def test_abort_error(event_loop, cancelled_future, queue):
     error1_called = False
     error2_called = False
 
-    queue.put_nowait({'a': 1})
+    queue.put_nowait({"a": 1})
 
     @asyncio.coroutine
     def callback(app, message):
         nonlocal callback_called
         callback_called = True
-        raise TypeError('testing')
+        raise TypeError("testing")
 
-    app = Application('testing', callback=callback)
+    app = Application("testing", callback=callback)
 
     @app.error
     @asyncio.coroutine
     def error1(app, message, exc):
         nonlocal error1_called
         error1_called = True
-        raise exceptions.Abort('testing', message)
+        raise exceptions.Abort("testing", message)
 
     @app.error
     @asyncio.coroutine
@@ -120,8 +118,7 @@ def test_abort_error(event_loop, cancelled_future, queue):
         nonlocal error2_called
         error2_called = True
 
-    event_loop.run_until_complete(
-        app._process(cancelled_future, queue, event_loop))
+    event_loop.run_until_complete(app._process(cancelled_future, queue, event_loop))
 
     assert callback_called
     assert error1_called
@@ -136,13 +133,13 @@ def test_abort_postprocess(event_loop, cancelled_future, queue):
     postprocess1_called_count = 0
     postprocess2_called_count = 0
 
-    queue.put_nowait({'a': 1})
+    queue.put_nowait({"a": 1})
 
     @asyncio.coroutine
     def callback(app, message):
         return [True, False]
 
-    app = Application('testing', callback=callback)
+    app = Application("testing", callback=callback)
 
     @app.result_postprocessor
     @asyncio.coroutine
@@ -150,7 +147,8 @@ def test_abort_postprocess(event_loop, cancelled_future, queue):
         nonlocal postprocess1_called_count
         postprocess1_called_count += 1
         if result:
-            raise exceptions.Abort('testing', result)
+            raise exceptions.Abort("testing", result)
+
         return result
 
     @app.result_postprocessor
@@ -160,8 +158,7 @@ def test_abort_postprocess(event_loop, cancelled_future, queue):
         postprocess2_called_count += 1
         return result
 
-    event_loop.run_until_complete(
-        app._process(cancelled_future, queue, event_loop))
+    event_loop.run_until_complete(app._process(cancelled_future, queue, event_loop))
 
     assert postprocess1_called_count == 2
     assert postprocess2_called_count == 1

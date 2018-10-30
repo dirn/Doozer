@@ -14,7 +14,8 @@ try:
         # Manually raise the exception if there is a distribution but
         # it's installed from elsewhere.
         raise _pkg_resources.DistributionNotFound
+
 except _pkg_resources.DistributionNotFound:
-    __version__ = 'development'
+    __version__ = "development"
 else:
     __version__ = _dist.version

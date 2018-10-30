@@ -6,7 +6,7 @@ from typing import Iterable, Mapping, Optional
 # annotation.
 from . import base  # NOQA: F401
 
-__all__ = ('Extension',)
+__all__ = ("Extension",)
 
 
 class Extension:
@@ -18,7 +18,7 @@ class Extension:
             of settings to interact with a database.
     """
 
-    def __init__(self, app: Optional['base.Application'] = None) -> None:
+    def __init__(self, app: Optional["base.Application"] = None) -> None:
         """Initialize an instance of the extension.
 
         If app is provided, init_app will also be called with the
@@ -57,7 +57,7 @@ class Extension:
         """
         return ()
 
-    def init_app(self, app: 'base.Application') -> None:
+    def init_app(self, app: "base.Application") -> None:
         """Initialize the application.
 
         In addition to associating the extension's default settings with
@@ -75,23 +75,25 @@ class Extension:
         missing_settings = required_settings - current_settings
         if missing_settings:
             raise KeyError(
-                '{} requires the following missing settings: {}'.format(
+                "{} requires the following missing settings: {}".format(
                     self.__class__.__name__,
-                    ', '.join(str(key) for key in missing_settings),
-                ),
+                    ", ".join(str(key) for key in missing_settings),
+                )
             )
 
-        if hasattr(self, 'register_cli'):
+        if hasattr(self, "register_cli"):
             self.register_cli()
 
         self._app = app
         self._app.extensions[self.__class__.__name__.lower()] = self
 
     @property
-    def app(self) -> 'base.Application':
+    def app(self) -> "base.Application":
         """Return the registered app."""
         if not self._app:
             raise RuntimeError(
-                'No application has been assigned to this instance. '
-                'init_app must be called before referencing instance.app.')
+                "No application has been assigned to this instance. "
+                "init_app must be called before referencing instance.app."
+            )
+
         return self._app

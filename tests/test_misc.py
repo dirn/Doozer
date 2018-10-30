@@ -13,6 +13,7 @@ def test_new_event_loop(monkeypatch, request):
 
     def restore_event_loop_policy():
         asyncio.set_event_loop_policy(policy)
+
     request.addfinalizer(restore_event_loop_policy)
 
     asyncio.set_event_loop_policy(None)
@@ -23,16 +24,17 @@ def test_new_event_loop(monkeypatch, request):
 
 def test_new_event_loop_uvloop(monkeypatch, request):
     """Test that uvloop's event policy is used when its installed."""
-    expected = 'event loop'
+    expected = "event loop"
 
     # Inject the stub uvloop into the imported modules so that we don't
     # actually need to install it to run this test.
+
     class uvloop:  # NOQA: N801
         @staticmethod
         def new_event_loop():
             return expected
 
-    monkeypatch.setitem(sys.modules, 'uvloop', uvloop)
+    monkeypatch.setitem(sys.modules, "uvloop", uvloop)
 
     actual = _new_event_loop()
 

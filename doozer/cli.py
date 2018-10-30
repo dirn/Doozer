@@ -21,14 +21,14 @@ from watchdog.observers import Observer
 from . import __version__
 from .base import Application, _new_event_loop
 
-__all__ = ('register_commands',)
+__all__ = ("register_commands",)
 
 
 def register_commands(
-        namespace: str,
-        functions: Sequence[Callable],
-        namespace_kwargs: Dict[str, Any] = None,
-        func_kwargs: Dict[str, Any] = None,
+    namespace: str,
+    functions: Sequence[Callable],
+    namespace_kwargs: Dict[str, Any] = None,
+    func_kwargs: Dict[str, Any] = None,
 ) -> None:
     """Register commands with the doozer CLI.
 
@@ -75,22 +75,20 @@ def register_commands(
         # treat keyword arguments as optional positional arguments, so
         # all functions are wrapped by expects_obj and then
         # _with_namespace.
-        accepts_app = 'app' in spec.args
+        accepts_app = "app" in spec.args
         function = _with_namespace(expects_obj(function), accepts_app)
 
         with suppress(ValueError):
             # Remove app from the list of arguments so that it doesn't
             # get registered twice.
-            spec.args.remove('app')
+            spec.args.remove("app")
 
         # Associate values with keyword arguments.
         if not spec.defaults:
             # None isn't iterable.
             defaults = {}
         else:
-            defaults = dict(zip(
-                spec.args[-len(spec.defaults):],
-                spec.defaults))
+            defaults = dict(zip(spec.args[-len(spec.defaults) :], spec.defaults))
 
         # Keyword-only arguments are exposed to the command line as
         # optional arguments. By default two flags are available for
@@ -115,34 +113,32 @@ def register_commands(
         # First, check for verbosity-related arguments since those are
         # handled in a special way. Remove any that are found from the
         # list of all arguments so they aren't processed again later.
-        if any(arg in arguments for arg in ('quiet', 'verbose')):
-            if 'quiet' not in arguments:
+        if any(arg in arguments for arg in ("quiet", "verbose")):
+            if "quiet" not in arguments:
                 # Add just the verbose argument.
-                decorator = arg(
-                    '--verbose', '-v', action='count', help='verbose mode')
+                decorator = arg("--verbose", "-v", action="count", help="verbose mode")
                 function = decorator(function)
-            elif 'verbose' not in arguments:
+            elif "verbose" not in arguments:
                 # Add just the quiet argument.
-                decorator = arg(
-                    '--quiet', '-q', action='count', help='quiet mode')
+                decorator = arg("--quiet", "-q", action="count", help="quiet mode")
                 function = decorator(function)
             else:
                 # Add the mutually exclusive group (through parent).
-                func_kwargs['parents'] = [parent]
+                func_kwargs["parents"] = [parent]
 
             with suppress(ValueError):
-                arguments.remove('verbose')
+                arguments.remove("verbose")
             with suppress(ValueError):
-                arguments.remove('quiet')
+                arguments.remove("quiet")
 
         for argument in reversed(arguments):
             kwargs = {}
             if argument in spec.kwonlyargs:
                 # Treat keyword-only arguments as optional arguments.
-                kwargs['default'] = spec.kwonlydefaults[argument]
+                kwargs["default"] = spec.kwonlydefaults[argument]
                 flags = (
-                    '-{0}'.format(argument[0]),
-                    '--{0}'.format(argument).replace('_', '-'),
+                    "-{0}".format(argument[0]),
+                    "--{0}".format(argument).replace("_", "-"),
                 )
                 if argument.startswith(conflicts):
                     flags = flags[1:]
@@ -153,8 +149,8 @@ def register_commands(
                 with suppress(KeyError):
                     # The argument will only be included in defaults
                     # for keyword arguments.
-                    kwargs['default'] = defaults[argument]
-                    kwargs['nargs'] = '?'
+                    kwargs["default"] = defaults[argument]
+                    kwargs["nargs"] = "?"
 
                 # The argument's name is replaced by a list of flags for
                 # keyword-only arguments. Simulate that here so that the
@@ -162,7 +158,7 @@ def register_commands(
                 flags = [argument]
 
             with suppress(KeyError):
-                kwargs['help'] = spec.annotations[argument]
+                kwargs["help"] = spec.annotations[argument]
 
             function = arg(*flags, **kwargs)(function)
 
@@ -179,22 +175,24 @@ def register_commands(
 
 # Rather than using type annotations, this provides CLI help
 # information. It will fail if type checked.
+
+
 @no_type_check
 def run(
-        application_path: 'the path to the application to run',
-        reloader: 'reload the application on changes' = False,
-        workers: 'the number of asynchronous tasks to run' = 1,
-        debug: 'enable debug mode' = False,
-        **kwargs,
+    application_path: "the path to the application to run",
+    reloader: "reload the application on changes" = False,
+    workers: "the number of asynchronous tasks to run" = 1,
+    debug: "enable debug mode" = False,
+    **kwargs,
 ):
     """Import and run an application."""
-    if kwargs['quiet']:
+    if kwargs["quiet"]:
         # If quiet mode has been enabled, set the number of verbose
         # flags to -1 so that the level above warning will be used.
         verbosity = -1
     else:
         # argparse gives None not 0.
-        verbosity = kwargs['verbose'] or 0
+        verbosity = kwargs["verbose"] or 0
 
     # Set the log level based on the number of verbose flags. Do this
     # before the app is imported so any log calls made will respect the
@@ -211,11 +209,11 @@ def run(
         # If the reloader is requested (or debug is enabled), create
         # threads for running the application and watching the file
         # system for changes.
-        app.logger.info('Running {!r} with reloader...'.format(app))
+        app.logger.info("Running {!r} with reloader...".format(app))
 
         # Find the root of the application and watch for changes
         watchdir = os.path.abspath(import_module(import_path).__file__)
-        for _ in import_path.split('.'):
+        for _ in import_path.split("."):
             watchdir = os.path.dirname(watchdir)
 
         # Create observer and runner threads
@@ -223,19 +221,19 @@ def run(
         loop = _new_event_loop()
         runner = Thread(
             target=app.run_forever,
-            kwargs={'num_workers': workers, 'loop': loop, 'debug': debug},
+            kwargs={"num_workers": workers, "loop": loop, "debug": debug},
         )
 
         # This function is called by watchdog event handler when changes
         # are detected by the observers
+
         def restart_process(event):
             """Restart the process in-place."""
             os.execv(sys.executable, [sys.executable] + sys.argv[:])
 
         # Create the handler and watch the files
         handler = PatternMatchingEventHandler(
-            patterns=['*.py', '*.ini'],
-            ignore_directories=True,
+            patterns=["*.py", "*.ini"], ignore_directories=True
         )
         handler.on_any_event = restart_process
         observer.schedule(handler, watchdir, recursive=True)
@@ -246,7 +244,7 @@ def run(
 
     else:
         # If the reloader is not needed, avoid the overhead
-        app.logger.info('Running {!r} forever...'.format(app))
+        app.logger.info("Running {!r} forever...".format(app))
         app.run_forever(num_workers=workers, debug=debug)
 
 
@@ -277,10 +275,10 @@ def _import_application(application_path: str) -> Tuple[str, Application]:
     # Add the present working directory to the import path so that
     # services can be found without installing them to site-packages
     # or modifying PYTHONPATH
-    sys.path.insert(0, '.')
+    sys.path.insert(0, ".")
 
     # First, find the module that should be imported
-    application_path_parts = application_path.split(':', 1)
+    application_path_parts = application_path.split(":", 1)
     import_path = application_path_parts.pop(0)
 
     # Then, try to find an import loader for the import_path
@@ -288,7 +286,7 @@ def _import_application(application_path: str) -> Tuple[str, Application]:
     # importable because of dependency import errors (Python 3 only)
     if not find_loader(import_path):
         raise CommandError(
-            'Unable to find an import loader for {}.'.format(import_path),
+            "Unable to find an import loader for {}.".format(import_path)
         )
 
     # Once found, import the module and handle any dependency errors
@@ -311,8 +309,9 @@ def _import_application(application_path: str) -> Tuple[str, Application]:
         # Fail if the attribute specified is not a Doozer application
         if not isinstance(app, Application):
             raise CommandError(
-                'app must be an instance of a Doozer application. '
-                'Got {}'.format(type(app)),
+                "app must be an instance of a Doozer application. Got {}".format(
+                    type(app)
+                )
             )
 
     # If no application name is specified, try to automatically select
@@ -327,17 +326,18 @@ def _import_application(application_path: str) -> Tuple[str, Application]:
         # If there are zero app_candidates, there's nothing to run.
         if not app_candidates:
             raise CommandError(
-                'No Doozer application found. Please specify the '
-                'application by name or run a different module.',
+                "No Doozer application found. Please specify the "
+                "application by name or run a different module."
             )
 
         # If there are more than one, the choice of which app to run is
         # ambiguous.
         if len(app_candidates) > 1:
             raise CommandError(
-                'More than one Doozer application found in {}. Please '
-                'specify a application by name (probably one of [{}]).'.format(
-                    import_path, ', '.join(ac[0] for ac in app_candidates)),
+                "More than one Doozer application found in {}. Please "
+                "specify a application by name (probably one of [{}]).".format(
+                    import_path, ", ".join(ac[0] for ac in app_candidates)
+                )
             )
 
         app_name, app = app_candidates[0]
@@ -347,13 +347,15 @@ def _import_application(application_path: str) -> Tuple[str, Application]:
 
 def _with_namespace(f, include_app):
     """Call the function with the parsed arguments."""
+
     @wraps(f)
     def inner(parsed_args):
         parsed_args = vars(parsed_args)
-        parsed_args.pop('_functions_stack', None)
+        parsed_args.pop("_functions_stack", None)
         if not include_app:
-            parsed_args.pop('app')
+            parsed_args.pop("app")
         return f(**parsed_args)
+
     return inner
 
 
@@ -364,18 +366,16 @@ parent = ArghParser(add_help=False)
 # Create a mutually exclusive group to control the verbosity. verbose
 # and quiet will be provided under kwargs.
 chatter = parent.add_mutually_exclusive_group()
-chatter.add_argument('--verbose', '-v', action='count', help='verbose mode')
-chatter.add_argument('--quiet', '-q', action='count', help='quiet mode')
+chatter.add_argument("--verbose", "-v", action="count", help="verbose mode")
+chatter.add_argument("--quiet", "-q", action="count", help="quiet mode")
 
 # Define a parser and add commands to it.
 parser = ArghParser()
-parser.add_argument('--version', action='version', version=__version__)
+parser.add_argument("--version", action="version", version=__version__)
 
 # Add an argument to import an application to load its CLI extensions.
 parser.add_argument(
-    '-a', '--app',
-    action=_ApplicationAction,
-    help='the path to the application to run',
+    "-a", "--app", action=_ApplicationAction, help="the path to the application to run"
 )
 
-parser.add_commands([run], func_kwargs={'parents': [parent]})
+parser.add_commands([run], func_kwargs={"parents": [parent]})

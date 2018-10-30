@@ -2,7 +2,7 @@
 
 from .types import Message
 
-__all__ = ('Abort',)
+__all__ = ("Abort",)
 
 
 class Abort(Exception):

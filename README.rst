@@ -1,9 +1,11 @@
-#####################
-Doozer |build status|
-#####################
+##################################
+Doozer |build status| |code style|
+##################################
 
 .. |build status| image:: https://travis-ci.org/dirn/Doozer.svg?branch=master
    :target: https://travis-ci.org/dirn/Doozer
+.. |code style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/ambv/black
 
 .. image:: docs/_static/logo.png
    :width: 373

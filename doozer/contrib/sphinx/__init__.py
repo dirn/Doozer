@@ -7,7 +7,7 @@ from doozer.extensions import Extension
 
 
 def _import_extension(import_path: str) -> Extension:
-    module_name, extension_name = import_path.split(':', 1)
+    module_name, extension_name = import_path.split(":", 1)
     module = __import__(module_name, fromlist=[extension_name])
     return getattr(module, extension_name)
 
@@ -34,12 +34,12 @@ class DoozerCLIDirective(AutoprogramDirective):
     def prepare_autoprogram(self) -> None:
         """Prepare the instance to be run through autoprogram."""
         # Tell autoprogram how to find the argument parser.
-        self.arguments = ('doozer.cli:parser',)
+        self.arguments = ("doozer.cli:parser",)
 
         # Most Doozer CLI extensions will be invoked the same way. The
         # extension authors shouldn't have to include that in their
         # Sphinx documentation.
-        self.options.setdefault('prog', 'doozer --app APP_PATH')
+        self.options.setdefault("prog", "doozer --app APP_PATH")
 
     def register_cli(self) -> None:
         """Register the CLI."""
@@ -57,4 +57,4 @@ class DoozerCLIDirective(AutoprogramDirective):
 
 def setup(app: Application) -> None:
     """Register the extension."""
-    app.add_directive('doozercli', DoozerCLIDirective)
+    app.add_directive("doozercli", DoozerCLIDirective)

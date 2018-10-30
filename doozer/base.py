@@ -16,7 +16,7 @@ from .config import Config
 from .exceptions import Abort
 from .types import Callback, Consumer, Message
 
-__all__ = ('Application',)
+__all__ = ("Application",)
 
 
 class Application:
@@ -40,12 +40,12 @@ class Application:
     """
 
     def __init__(
-            self,
-            name: str,
-            settings: Optional[Any] = None,
-            *,
-            consumer: Optional[Consumer] = None,
-            callback: Optional[Callback] = None,
+        self,
+        name: str,
+        settings: Optional[Any] = None,
+        *,
+        consumer: Optional[Consumer] = None,
+        callback: Optional[Callback] = None,
     ) -> None:
         """Initialize the class."""
         self.name = name
@@ -53,21 +53,21 @@ class Application:
         # Configuration
         self.settings = Config()
         self.settings.from_object(settings or {})
-        self.settings.setdefault('DEBUG', False)
-        self.settings.setdefault('SLEEP_TIME', 0.1)
+        self.settings.setdefault("DEBUG", False)
+        self.settings.setdefault("SLEEP_TIME", 0.1)
 
         # Callbacks
         self.callback = callback
         self._callbacks: Dict[str, List[Callback]] = {
-            'error': [],
-            'message_acknowledgement': [],
-            'message_preprocessor': [],
-            'result_postprocessor': [],
-            'startup': [],
-            'teardown': [],
+            "error": [],
+            "message_acknowledgement": [],
+            "message_preprocessor": [],
+            "result_postprocessor": [],
+            "startup": [],
+            "teardown": [],
         }
 
-        self.extensions: Dict[str, 'extensions.Extension'] = {}
+        self.extensions: Dict[str, "extensions.Extension"] = {}
 
         self.consumer = consumer
 
@@ -77,7 +77,7 @@ class Application:
         return self.name
 
     def __repr__(self):
-        return '<Application: {}>'.format(self)
+        return "<Application: {}>".format(self)
 
     def error(self, callback: Callback) -> Callback:
         """Register an error callback.
@@ -95,7 +95,7 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'error')
+        self._register_callback(callback, "error")
         return callback
 
     def message_acknowledgement(self, callback: Callback) -> Callback:
@@ -113,7 +113,7 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'message_acknowledgement')
+        self._register_callback(callback, "message_acknowledgement")
         return callback
 
     def message_preprocessor(self, callback: Callback) -> Callback:
@@ -131,7 +131,7 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'message_preprocessor')
+        self._register_callback(callback, "message_preprocessor")
         return callback
 
     def result_postprocessor(self, callback: Callback) -> Callback:
@@ -149,14 +149,14 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'result_postprocessor')
+        self._register_callback(callback, "result_postprocessor")
         return callback
 
     def run_forever(
-            self,
-            num_workers: int = 1,
-            loop: Optional[AbstractEventLoop] = None,
-            debug: bool = False,
+        self,
+        num_workers: int = 1,
+        loop: Optional[AbstractEventLoop] = None,
+        debug: bool = False,
     ) -> NoReturn:
         """Consume from the consumer until interrupted.
 
@@ -192,8 +192,8 @@ class Application:
 
         # Start the application.
         tasks = [
-            asyncio.ensure_future(callback(self), loop=loop) for callback in
-            self._callbacks['startup']
+            asyncio.ensure_future(callback(self), loop=loop)
+            for callback in self._callbacks["startup"]
         ]
         future = asyncio.gather(*tasks, loop=loop)
         loop.run_until_complete(future)
@@ -205,8 +205,8 @@ class Application:
         if debug:
             # Set the application's debug mode to true if run_forever
             # was called with debug enabled.
-            self.settings['DEBUG'] = True
-        if self.settings['DEBUG']:
+            self.settings["DEBUG"] = True
+        if self.settings["DEBUG"]:
             # If the application is running in debug mode, enable it for
             # the loop and set the logger to DEBUG. If, however, the
             # log level was set to something lower than DEBUG, don't
@@ -214,7 +214,7 @@ class Application:
             loop.set_debug(True)
             self.logger.setLevel(min(self.logger.level, logging.DEBUG))
 
-        self.logger.debug('application.started')
+        self.logger.debug("application.started")
 
         # Create an asynchronous queue to pass the messages from the
         # consumer to the processor. The queue should hold one message
@@ -229,10 +229,7 @@ class Application:
         # running it should be restarted and wait until the future is
         # done.
         tasks = [
-            asyncio.ensure_future(
-                self._process(consumer, queue, loop),
-                loop=loop,
-            )
+            asyncio.ensure_future(self._process(consumer, queue, loop), loop=loop)
             for _ in range(num_workers)
         ]
         future = asyncio.gather(*tasks, loop=loop)
@@ -242,7 +239,7 @@ class Application:
             # processing fails.
             loop.run_until_complete(asyncio.gather(consumer, future))
         except BaseException:
-            self.logger.exception('loop.canceled')
+            self.logger.exception("loop.canceled")
         finally:
             # If something went wrong while processing the message,
             # cancel the consumer. This will alert the processors to
@@ -258,13 +255,12 @@ class Application:
             # tasks inside the future.
             exc = future.exception()
             if exc:
-                self.logger.exception('tasks.erred', exc_info=exc)
+                self.logger.exception("tasks.erred", exc_info=exc)
 
             # Teardown
             tasks = [
                 asyncio.ensure_future(callback(self), loop=loop)
-                for callback
-                in self._callbacks['teardown']
+                for callback in self._callbacks["teardown"]
             ]
             future = asyncio.gather(*tasks, loop=loop)
             loop.run_until_complete(future)
@@ -272,7 +268,7 @@ class Application:
             # Clean up after ourselves.
             loop.close()
 
-        self.logger.debug('application.stopped')
+        self.logger.debug("application.stopped")
 
     def startup(self, callback: Callback) -> Callback:
         """Register a startup callback.
@@ -289,7 +285,7 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'startup')
+        self._register_callback(callback, "startup")
         return callback
 
     def teardown(self, callback: Callback) -> Callback:
@@ -307,7 +303,7 @@ class Application:
         Raises:
             TypeError: If the callback isn't a coroutine.
         """
-        self._register_callback(callback, 'teardown')
+        self._register_callback(callback, "teardown")
         return callback
 
     async def _abort(self, exc: Abort) -> None:
@@ -318,17 +314,16 @@ class Application:
         """
         tb = sys.exc_info()[-1]
         stack = traceback.extract_tb(tb, 1)[-1]
-        self.logger.debug('callback.aborted', extra={
-            'exception': exc,
-            'exception_message': exc.message,
-            'aborted_by': stack,
-        })
+        self.logger.debug(
+            "callback.aborted",
+            extra={
+                "exception": exc,
+                "exception_message": exc.message,
+                "aborted_by": stack,
+            },
+        )
 
-    async def _apply_callbacks(
-            self,
-            callbacks: List[Callback],
-            value: Message,
-    ) -> Any:
+    async def _apply_callbacks(self, callbacks: List[Callback], value: Message) -> Any:
         """Apply callbacks to a set of arguments.
 
         The callbacks will be called in the order in which they are
@@ -363,16 +358,14 @@ class Application:
             try:
                 value = await self.consumer.read()
             except Abort:
-                self.logger.debug('consumer.aborted')
+                self.logger.debug("consumer.aborted")
                 return
+
             else:
                 await queue.put(value)
 
     async def _process(
-            self,
-            future: Future,
-            queue: Queue,
-            loop: AbstractEventLoop,
+        self, future: Future, queue: Queue, loop: AbstractEventLoop
     ) -> None:
         """Process incoming messages.
 
@@ -391,8 +384,7 @@ class Application:
                 if future.done():
                     break
 
-                await asyncio.sleep(
-                    self.settings['SLEEP_TIME'], loop=loop)
+                await asyncio.sleep(self.settings["SLEEP_TIME"], loop=loop)
                 continue
 
             message = await queue.get()
@@ -402,30 +394,32 @@ class Application:
 
             try:
                 message = await self._apply_callbacks(
-                    self._callbacks['message_preprocessor'], message)
-                self.logger.debug('message.preprocessed')
+                    self._callbacks["message_preprocessor"], message
+                )
+                self.logger.debug("message.preprocessed")
 
                 results = await self.callback(self, message)
             except Abort as e:
                 await self._abort(e)
             except Exception as e:
-                self.logger.error('message.failed', exc_info=sys.exc_info())
+                self.logger.error("message.failed", exc_info=sys.exc_info())
 
-                for callback in self._callbacks['error']:
+                for callback in self._callbacks["error"]:
                     # Any callback can prevent execution of further
                     # callbacks by raising Abort.
                     try:
                         await callback(self, message, e)
                     except Abort:
                         break
+
             else:
                 await self._postprocess_results(results)
             finally:
                 # Don't use _apply_callbacks here since we want to pass
                 # the original message into each callback.
-                for callback in self._callbacks['message_acknowledgement']:
+                for callback in self._callbacks["message_acknowledgement"]:
                     await callback(self, original_message)
-                self.logger.debug('message.acknowledged')
+                self.logger.debug("message.acknowledged")
 
                 # If there are no new messages in the queue, _process
                 # won't reassign the variables that it uses to track the
@@ -453,16 +447,13 @@ class Application:
         for result in results:
             try:
                 await self._apply_callbacks(
-                    self._callbacks['result_postprocessor'], result)
-                self.logger.debug('result.postprocessed')
+                    self._callbacks["result_postprocessor"], result
+                )
+                self.logger.debug("result.postprocessed")
             except Abort as e:
                 await self._abort(e)
 
-    def _register_callback(
-            self,
-            callback: Callback,
-            callback_container: str,
-    ) -> None:
+    def _register_callback(self, callback: Callback, callback_container: str) -> None:
         """Register a callback.
 
         Args:
@@ -474,20 +465,21 @@ class Application:
             TypeError: If the callback isn't a coroutine.
         """
         if not asyncio.iscoroutinefunction(callback):
-            raise TypeError('The callback must be a coroutine.')
+            raise TypeError("The callback must be a coroutine.")
 
         self._callbacks[callback_container].append(callback)
 
-        self.logger.debug('callback.registered', extra={
-            'type': callback_container,
-            'callback': callback.__qualname__,
-        })
+        self.logger.debug(
+            "callback.registered",
+            extra={"type": callback_container, "callback": callback.__qualname__},
+        )
 
     def _teardown(self, future: Future, loop: AbstractEventLoop) -> None:
         """Tear down the application."""
         tasks = [
-            asyncio.ensure_future(callback(self), loop=loop) for callback in
-            self._callbacks['teardown']]
+            asyncio.ensure_future(callback(self), loop=loop)
+            for callback in self._callbacks["teardown"]
+        ]
         future = asyncio.gather(*tasks, loop=loop)
         loop.run_until_complete(future)
 
@@ -507,5 +499,6 @@ def _new_event_loop() -> AbstractEventLoop:
         import uvloop
     except ImportError:
         return asyncio.new_event_loop()
+
     else:
         return uvloop.new_event_loop()

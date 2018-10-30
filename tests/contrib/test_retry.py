@@ -10,51 +10,60 @@ from doozer.contrib import retry
 from doozer.exceptions import Abort
 
 
-@pytest.mark.parametrize('delay, backoff, count, expected', (
-    (1, 1, 0, 1),
-    (1, 1, 1, 1),
-    (1, 1, 4, 1),
-    (1, 2, 0, 1),
-    (1, 2, 1, 2),
-    (1, 2, 4, 16),
-    (10, 1.5, 0, 10),
-    (10, 1.5, 1, 15),
-    (10, 1.5, 4, 50.625),
-))
+@pytest.mark.parametrize(
+    "delay, backoff, count, expected",
+    (
+        (1, 1, 0, 1),
+        (1, 1, 1, 1),
+        (1, 1, 4, 1),
+        (1, 2, 0, 1),
+        (1, 2, 1, 2),
+        (1, 2, 4, 16),
+        (10, 1.5, 0, 10),
+        (10, 1.5, 1, 15),
+        (10, 1.5, 4, 50.625),
+    ),
+)
 def test_calculate_delay(delay, backoff, count, expected):
     """Test _calculcate_delay."""
     actual = retry._calculate_delay(delay, backoff, count)
     assert actual == expected
 
 
-@pytest.mark.parametrize('number_of_retries, threshold, expected', [
-    # Retry forever.
-    (0, None, False),
-    (1, None, False),
-    # Don't retry.
-    (0, 0, True),
-    (1, 0, True),
-    # Rrtry.
-    (0, 1, False),
-    (1, 2, False),
-])
+@pytest.mark.parametrize(
+    "number_of_retries, threshold, expected",
+    [
+        # Retry forever.
+        (0, None, False),
+        (1, None, False),
+        # Don't retry.
+        (0, 0, True),
+        (1, 0, True),
+        # Rrtry.
+        (0, 1, False),
+        (1, 2, False),
+    ],
+)
 def test_exceeded_threshold(number_of_retries, threshold, expected):
     """Test _exceeded_threshold."""
     actual = retry._exceeded_threshold(number_of_retries, threshold)
     assert actual == expected
 
 
-@pytest.mark.parametrize('offset, duration, expected', [
-    # Retry forever.
-    (0, None, False),  # now
-    (10000, None, False),  # 10 seconds ago
-    # Don't retry.
-    (0, 0, True),
-    (10000, 0, True),
-    # Retry.
-    (1000, 10, False),
-    (10000, 20, False),
-])
+@pytest.mark.parametrize(
+    "offset, duration, expected",
+    [
+        # Retry forever.
+        (0, None, False),  # now
+        (10000, None, False),  # 10 seconds ago
+        # Don't retry.
+        (0, 0, True),
+        (10000, 0, True),
+        # Retry.
+        (1000, 10, False),
+        (10000, 20, False),
+    ],
+)
 def test_exceeded_timeout(offset, duration, expected):
     """Test _exceeded_timeout."""
     start_time = int(time.time()) - offset
@@ -65,15 +74,16 @@ def test_exceeded_timeout(offset, duration, expected):
 def test_callback_insertion(test_app, coroutine):
     """Test that the callback is properly registered."""
     # Add an error callback before registering Retry.
+
     @test_app.error
     async def original_callback(*args):
         pass
 
     # Register Retry.
-    test_app.settings['RETRY_CALLBACK'] = coroutine
+    test_app.settings["RETRY_CALLBACK"] = coroutine
     retry.Retry(test_app)
 
-    assert test_app._callbacks['error'][0] is retry._retry
+    assert test_app._callbacks["error"][0] is retry._retry
 
 
 @pytest.mark.asyncio
@@ -87,10 +97,10 @@ async def test_callback_exceeds_threshold(test_app, coroutine):
         nonlocal original_callback_called
         original_callback_called = True
 
-    test_app.settings['RETRY_CALLBACK'] = coroutine
-    test_app.settings['RETRY_THRESHOLD'] = 0
+    test_app.settings["RETRY_CALLBACK"] = coroutine
+    test_app.settings["RETRY_THRESHOLD"] = 0
 
-    for cb in test_app._callbacks['error']:
+    for cb in test_app._callbacks["error"]:
         await cb(test_app, {}, retry.RetryableException())
 
     assert original_callback_called
@@ -107,10 +117,10 @@ async def test_callback_exceeds_timeout(test_app, coroutine):
         nonlocal original_callback_called
         original_callback_called = True
 
-    test_app.settings['RETRY_CALLBACK'] = coroutine
-    test_app.settings['RETRY_TIMEOUT'] = 0
+    test_app.settings["RETRY_CALLBACK"] = coroutine
+    test_app.settings["RETRY_TIMEOUT"] = 0
 
-    for cb in test_app._callbacks['error']:
+    for cb in test_app._callbacks["error"]:
         await cb(test_app, {}, retry.RetryableException())
 
     assert original_callback_called
@@ -119,11 +129,11 @@ async def test_callback_exceeds_timeout(test_app, coroutine):
 @pytest.mark.asyncio
 async def test_callback_prevents_others(test_app, coroutine):
     """Test that the callback blocks other callbacks."""
-    test_app.settings['RETRY_CALLBACK'] = coroutine
+    test_app.settings["RETRY_CALLBACK"] = coroutine
     retry.Retry(test_app)
 
     with pytest.raises(Abort):
-        for cb in test_app._callbacks['error']:
+        for cb in test_app._callbacks["error"]:
             await cb(test_app, {}, retry.RetryableException())
 
 
@@ -132,15 +142,15 @@ async def test_delay(monkeypatch, test_app, coroutine):
     """Test that retry delays."""
     sleep_called = False
 
-    test_app.settings['RETRY_CALLBACK'] = coroutine
-    test_app.settings['RETRY_DELAY'] = 1
+    test_app.settings["RETRY_CALLBACK"] = coroutine
+    test_app.settings["RETRY_DELAY"] = 1
     retry.Retry(test_app)
 
     async def sleep(duration):
         nonlocal sleep_called
         sleep_called = True
 
-    monkeypatch.setattr(asyncio, 'sleep', sleep)
+    monkeypatch.setattr(asyncio, "sleep", sleep)
 
     with suppress(Abort):
         await retry._retry(test_app, {}, retry.RetryableException())

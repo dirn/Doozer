@@ -9,7 +9,7 @@ from doozer.exceptions import Abort
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('original, expected', ((1, 4), (2, 6)))
+@pytest.mark.parametrize("original, expected", ((1, 4), (2, 6)))
 async def test_apply_callbacks(original, expected):
     """Test Application._apply_callbacks."""
     callback1_called = False
@@ -25,7 +25,7 @@ async def test_apply_callbacks(original, expected):
         callback2_called = True
         return message * 2
 
-    app = Application('testing')
+    app = Application("testing")
 
     actual = await app._apply_callbacks([callback1, callback2], original)
     assert actual == expected
@@ -38,7 +38,7 @@ def test_consume(event_loop, test_consumer):
     """Test Application._consume."""
     queue = asyncio.Queue(maxsize=1)
 
-    app = Application('testing', consumer=test_consumer)
+    app = Application("testing", consumer=test_consumer)
 
     asyncio.ensure_future(app._consume(queue), loop=event_loop)
 
@@ -59,7 +59,7 @@ def test_consumer_aborts(event_loop):
         async def read(self):
             nonlocal consumer_called
             consumer_called = True
-            raise Abort('reason', 'message')
+            raise Abort("reason", "message")
 
     async def callback(app, message):
         nonlocal callback_called
@@ -67,7 +67,7 @@ def test_consumer_aborts(event_loop):
         while True:
             await asyncio.sleep(0)
 
-    app = Application('testing', consumer=Consumer(), callback=callback)
+    app = Application("testing", consumer=Consumer(), callback=callback)
     app.run_forever(loop=event_loop)
 
     assert consumer_called
@@ -89,7 +89,7 @@ def test_consumer_exception(event_loop):
         nonlocal callback_called
         callback_called = True
 
-    app = Application('testing', consumer=Consumer(), callback=callback)
+    app = Application("testing", consumer=Consumer(), callback=callback)
     app.run_forever(loop=event_loop)
 
     assert consumer_called
@@ -98,76 +98,76 @@ def test_consumer_exception(event_loop):
 
 def test_consumer_is_none_typeerror():
     """Test TypeError is raised if the consumer is None."""
-    app = Application('testing', consumer=None)
+    app = Application("testing", consumer=None)
     with pytest.raises(TypeError):
         app.run_forever()
 
 
-@pytest.mark.parametrize('callback', (None, '', False, 10, sum))
+@pytest.mark.parametrize("callback", (None, "", False, 10, sum))
 def test_callback_not_coroutine_typerror(callback):
     """Test TypeError is raised if callback isn't a coroutine."""
-    app = Application('testing', consumer=[], callback=callback)
+    app = Application("testing", consumer=[], callback=callback)
     with pytest.raises(TypeError):
         app.run_forever()
 
 
-@pytest.mark.parametrize('error_callback', (None, '', False, 10, sum))
+@pytest.mark.parametrize("error_callback", (None, "", False, 10, sum))
 def test_error_not_coroutine_typeerror(error_callback):
     """Test TypeError is raised if error callback isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.error(error_callback)
 
 
-@pytest.mark.parametrize('acknowledgement', (None, '', False, 10, sum))
+@pytest.mark.parametrize("acknowledgement", (None, "", False, 10, sum))
 def test_message_acknowledgement_not_coroutine_typeerror(acknowledgement):
     """Test TypeError is raised if acknowledgement isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.message_acknowledgement(acknowledgement)
 
 
-def test_message_acknowledgement_original_message(event_loop, coroutine,
-                                                  cancelled_future, queue):
+def test_message_acknowledgement_original_message(
+    event_loop, coroutine, cancelled_future, queue
+):
     """Test that original message is acknowledged."""
-    actual = ''
+    actual = ""
 
-    expected = 'original'
+    expected = "original"
     queue.put_nowait(expected)
 
-    app = Application('testing', callback=coroutine)
+    app = Application("testing", callback=coroutine)
 
     @app.message_preprocessor
     async def preprocess(app, message):
-        return 'changed'
+        return "changed"
 
     @app.message_acknowledgement
     async def acknowledge(app, message):
         nonlocal actual
         actual = message
 
-    event_loop.run_until_complete(
-        app._process(cancelled_future, queue, event_loop))
+    event_loop.run_until_complete(app._process(cancelled_future, queue, event_loop))
 
     assert actual == expected
 
 
-@pytest.mark.parametrize('preprocess', (None, '', False, 10, sum))
+@pytest.mark.parametrize("preprocess", (None, "", False, 10, sum))
 def test_message_preprocessor_not_coroutine_typeerror(preprocess):
     """Test TypeError is raised if preprocessor isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.message_preprocessor(preprocess)
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('original, expected', ((1, 2), (2, 3)))
+@pytest.mark.parametrize("original, expected", ((1, 2), (2, 3)))
 async def test_postprocess_results(original, expected):
     """Test Application._postprocess_results."""
     callback1_called = False
     callback2_called = False
 
-    app = Application('testing')
+    app = Application("testing")
 
     @app.result_postprocessor
     async def callback1(app, message):
@@ -191,10 +191,11 @@ async def test_postprocess_results(original, expected):
 
 def test_process_exception_stops_application(event_loop, test_consumer):
     """Test that the application stops after a processing exception."""
+
     async def callback(app, message):
         return [{}]
 
-    app = Application('testing', consumer=test_consumer, callback=callback)
+    app = Application("testing", consumer=test_consumer, callback=callback)
 
     @app.result_postprocessor
     async def postprocess(app, message):
@@ -204,26 +205,26 @@ def test_process_exception_stops_application(event_loop, test_consumer):
         app.run_forever(loop=event_loop)
 
 
-@pytest.mark.parametrize('postprocess', (None, '', False, 10, sum))
+@pytest.mark.parametrize("postprocess", (None, "", False, 10, sum))
 def test_result_postprocessor_not_coroutine_typeerror(postprocess):
     """Test TypeError is raised if postprocessor isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.result_postprocessor(postprocess)
 
 
-@pytest.mark.parametrize('startup', (None, '', False, 10, sum))
+@pytest.mark.parametrize("startup", (None, "", False, 10, sum))
 def test_startup_not_coroutine_typeerror(startup):
     """Test TypeError is raised if startup isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.startup(startup)
 
 
-@pytest.mark.parametrize('teardown', (None, '', False, 10, sum))
+@pytest.mark.parametrize("teardown", (None, "", False, 10, sum))
 def test_teardown_not_coroutine_typeerror(teardown):
     """Test TypeError is raised if teardown isn't a coroutine."""
-    app = Application('testing')
+    app = Application("testing")
     with pytest.raises(TypeError):
         app.teardown(teardown)
 
@@ -242,11 +243,7 @@ def test_run_forever(event_loop, test_consumer_with_abort):
         callback_called = True
         return [message + 1]
 
-    app = Application(
-        'testing',
-        consumer=test_consumer_with_abort,
-        callback=callback,
-    )
+    app = Application("testing", consumer=test_consumer_with_abort, callback=callback)
 
     @app.startup
     async def startup(app):
