@@ -1,5 +1,5 @@
 include LICENSE *.rst
-exclude .editorconfig
+exclude .editorconfig .pre-commit-config.yaml
 
 # Tests
 include tox.ini .coveragerc conftest.py *-requirements.txt
