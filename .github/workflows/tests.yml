@@ -127,7 +127,7 @@ jobs:
           pip install -r test-requirements.txt
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Check the manifest
+      - name: Run unit tests
         run: |
           tox -e py36
 
@@ -158,6 +158,6 @@ jobs:
           pip install -r test-requirements.txt
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: Check the manifest
+      - name: Run unit tests
         run: |
           tox -e py37
