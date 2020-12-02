@@ -9,6 +9,11 @@ on:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.6
+          - 3.7
 
     steps:
       - uses: actions/checkout@v2
@@ -18,13 +23,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('test-requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('test-requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -40,6 +45,11 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.6
+          - 3.7
 
     steps:
       - uses: actions/checkout@v2
@@ -49,13 +59,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('test-requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('test-requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
