@@ -17,5 +17,5 @@ class Consumer(Protocol):
     """An implementation of the Consumer Interface."""
 
     @asyncio.coroutine
-    def read(self) -> Any:  # NOQA: D401
-        """The read method of the Consumer Interface."""
+    def read(self) -> Any:
+        """The read method of the Consumer Interface."""  # NOQA: D401
