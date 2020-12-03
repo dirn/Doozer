@@ -177,7 +177,7 @@ def register_commands(
 # information. It will fail if type checked.
 
 
-@no_type_check
+@no_type_check  # NOQA: F722
 def run(
     application_path: "the path to the application to run",
     reloader: "reload the application on changes" = False,
