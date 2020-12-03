@@ -43,7 +43,7 @@ class DoozerCLIDirective(AutoprogramDirective):
 
     def register_cli(self) -> None:
         """Register the CLI."""
-        import_path, = self.arguments
+        (import_path,) = self.arguments
         extension = _import_extension(import_path)
         extension().register_cli()
 
