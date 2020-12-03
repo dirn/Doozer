@@ -11,6 +11,7 @@ class PyTest(TestCommand):
 
     def run_tests(self):
         import pytest
+
         sys.exit(pytest.main(self.test_args))
 
 
@@ -20,48 +21,48 @@ def read(filename):
 
 
 setup(
-    name='Doozer',
-    version='2.0.0',
-    author='Andy Dirnberger, Jon Banafato, and others',
-    author_email='andy@dirnberger.me',
-    url='https://doozer.readthedocs.io',
-    description='A framework for running a Python service driven by a consumer',
-    long_description=read('README.rst'),
-    license='MIT',
-    packages=find_packages(exclude=['tests']),
+    name="Doozer",
+    version="2.0.0",
+    author="Andy Dirnberger, Jon Banafato, and others",
+    author_email="andy@dirnberger.me",
+    url="https://doozer.readthedocs.io",
+    description="A framework for running a Python service driven by a consumer",
+    long_description=read("README.rst"),
+    license="MIT",
+    packages=find_packages(exclude=["tests"]),
     zip_safe=False,
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         # TODO: determine minimum versions for requirements
-        'argh',
-        'watchdog>=0.8.3',
+        "argh",
+        "watchdog>=0.8.3",
     ],
     extras_require={
-        'sphinx': [
-            'sphinxcontrib-autoprogram>=0.1.3',
+        "sphinx": [
+            "sphinxcontrib-autoprogram>=0.1.3",
         ],
     },
     tests_require=[
-        'pytest',
-        'pytest-asyncio',
+        "pytest",
+        "pytest-asyncio",
     ],
     cmdclass={
-        'test': PyTest,
+        "test": PyTest,
     },
-    entry_points='''
+    entry_points="""
         [console_scripts]
         doozer=doozer.cli:main
-    ''',
+    """,
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Operating System :: POSIX',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3 :: Only',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-    ]
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Operating System :: POSIX",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
+    ],
 )
