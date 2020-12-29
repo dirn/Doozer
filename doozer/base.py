@@ -192,10 +192,10 @@ class Application:
 
         # Start the application.
         tasks = [
-            asyncio.ensure_future(callback(self), loop=loop)
+            asyncio.ensure_future(callback(self))
             for callback in self._callbacks["startup"]
         ]
-        future = asyncio.gather(*tasks, loop=loop)
+        future = asyncio.gather(*tasks)
         loop.run_until_complete(future)
 
         # The following debug mode checks are intentionally separate.
@@ -219,7 +219,7 @@ class Application:
         # Create an asynchronous queue to pass the messages from the
         # consumer to the processor. The queue should hold one message
         # for each processing task.
-        queue = asyncio.Queue(maxsize=num_workers, loop=loop)
+        queue = asyncio.Queue(maxsize=num_workers)
 
         # Create a task to monitor the consumer.
         consumer = loop.create_task(self._consume(queue))
@@ -229,10 +229,10 @@ class Application:
         # running it should be restarted and wait until the future is
         # done.
         tasks = [
-            asyncio.ensure_future(self._process(consumer, queue, loop), loop=loop)
+            asyncio.ensure_future(self._process(consumer, queue, loop))
             for _ in range(num_workers)
         ]
-        future = asyncio.gather(*tasks, loop=loop)
+        future = asyncio.gather(*tasks)
 
         try:
             # Run the loop until the consumer says to stop or message
@@ -259,10 +259,10 @@ class Application:
 
             # Teardown
             tasks = [
-                asyncio.ensure_future(callback(self), loop=loop)
+                asyncio.ensure_future(callback(self))
                 for callback in self._callbacks["teardown"]
             ]
-            future = asyncio.gather(*tasks, loop=loop)
+            future = asyncio.gather(*tasks)
             loop.run_until_complete(future)
 
             # Clean up after ourselves.
@@ -384,7 +384,7 @@ class Application:
                 if future.done():
                     break
 
-                await asyncio.sleep(self.settings["SLEEP_TIME"], loop=loop)
+                await asyncio.sleep(self.settings["SLEEP_TIME"])
                 continue
 
             message = await queue.get()
@@ -477,10 +477,10 @@ class Application:
     def _teardown(self, future: Future, loop: AbstractEventLoop) -> None:
         """Tear down the application."""
         tasks = [
-            asyncio.ensure_future(callback(self), loop=loop)
+            asyncio.ensure_future(callback(self))
             for callback in self._callbacks["teardown"]
         ]
-        future = asyncio.gather(*tasks, loop=loop)
+        future = asyncio.gather(*tasks)
         loop.run_until_complete(future)
 
 

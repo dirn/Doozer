@@ -51,7 +51,7 @@ class MockAbortingConsumer:
 @pytest.fixture
 def cancelled_future(event_loop):
     """Return a Future that's been cancelled."""
-    future = asyncio.Future(loop=event_loop)
+    future = asyncio.Future()
     future.cancel()
     return future
 
