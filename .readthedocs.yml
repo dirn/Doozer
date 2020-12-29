@@ -4,6 +4,6 @@ build:
 python:
   pip_install: true
   # Build the docs using the lowest supported version of Python.
-  version: 3.6
+  version: 3.8
 
 requirements_file: docs-requirements.txt
