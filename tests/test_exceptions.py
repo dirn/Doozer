@@ -1,7 +1,5 @@
 """Test Doozer's exceptions."""
 
-import asyncio
-
 from doozer import exceptions
 from doozer.base import Application
 
@@ -18,8 +16,7 @@ def test_abort_preprocessor(event_loop, cancelled_future, queue):
 
     queue.put_nowait({"a": 1})
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
         return message
@@ -27,22 +24,19 @@ def test_abort_preprocessor(event_loop, cancelled_future, queue):
     app = Application("testing", callback=callback)
 
     @app.message_preprocessor
-    @asyncio.coroutine
-    def preprocess1(app, message):
+    async def preprocess1(app, message):
         nonlocal preprocess1_called
         preprocess1_called = True
         raise exceptions.Abort("testing", message)
 
     @app.message_preprocessor
-    @asyncio.coroutine
-    def preprocess2(app, message):
+    async def preprocess2(app, message):
         nonlocal preprocess2_called
         preprocess2_called = True
         return message
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess(app, result):
+    async def postprocess(app, result):
         nonlocal postprocess_called
         postprocess_called = True
         return result
@@ -65,8 +59,7 @@ def test_abort_callback(event_loop, cancelled_future, queue):
 
     queue.put_nowait({"a": 1})
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
         raise exceptions.Abort("testing", message)
@@ -74,8 +67,7 @@ def test_abort_callback(event_loop, cancelled_future, queue):
     app = Application("testing", callback=callback)
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess(app, result):
+    async def postprocess(app, result):
         nonlocal postprocess_called
         postprocess_called = True
         return result
@@ -97,8 +89,7 @@ def test_abort_error(event_loop, cancelled_future, queue):
 
     queue.put_nowait({"a": 1})
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         nonlocal callback_called
         callback_called = True
         raise TypeError("testing")
@@ -106,15 +97,13 @@ def test_abort_error(event_loop, cancelled_future, queue):
     app = Application("testing", callback=callback)
 
     @app.error
-    @asyncio.coroutine
-    def error1(app, message, exc):
+    async def error1(app, message, exc):
         nonlocal error1_called
         error1_called = True
         raise exceptions.Abort("testing", message)
 
     @app.error
-    @asyncio.coroutine
-    def error2(app, message, exc):
+    async def error2(app, message, exc):
         nonlocal error2_called
         error2_called = True
 
@@ -135,15 +124,13 @@ def test_abort_postprocess(event_loop, cancelled_future, queue):
 
     queue.put_nowait({"a": 1})
 
-    @asyncio.coroutine
-    def callback(app, message):
+    async def callback(app, message):
         return [True, False]
 
     app = Application("testing", callback=callback)
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess1(app, result):
+    async def postprocess1(app, result):
         nonlocal postprocess1_called_count
         postprocess1_called_count += 1
         if result:
@@ -152,8 +139,7 @@ def test_abort_postprocess(event_loop, cancelled_future, queue):
         return result
 
     @app.result_postprocessor
-    @asyncio.coroutine
-    def postprocess2(app, result):
+    async def postprocess2(app, result):
         nonlocal postprocess2_called_count
         postprocess2_called_count += 1
         return result
