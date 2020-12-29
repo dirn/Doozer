@@ -3,7 +3,7 @@ Version 2.0.0
 
 Release TBD
 
-- Drop support for Python 3.4 and 3.5 *(backwards incompatible)*
+- Drop support for Python 3.4, 3.5, and 3.6 *(backwards incompatible)*
 - Add type annotations
 
 Version 1.2.0
