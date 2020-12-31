@@ -40,7 +40,7 @@ def test_consume(event_loop, test_consumer):
 
     app = Application("testing", consumer=test_consumer)
 
-    asyncio.ensure_future(app._consume(queue))
+    event_loop.create_task(app._consume(queue))
 
     event_loop.stop()  # Run the event loop once.
     event_loop.run_forever()
