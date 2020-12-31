@@ -192,8 +192,7 @@ class Application:
 
         # Start the application.
         tasks = [
-            asyncio.ensure_future(callback(self))
-            for callback in self._callbacks["startup"]
+            loop.create_task(callback(self)) for callback in self._callbacks["startup"]
         ]
         future = asyncio.gather(*tasks)
         loop.run_until_complete(future)
@@ -229,7 +228,7 @@ class Application:
         # running it should be restarted and wait until the future is
         # done.
         tasks = [
-            asyncio.ensure_future(self._process(consumer, queue, loop))
+            loop.create_task(self._process(consumer, queue, loop))
             for _ in range(num_workers)
         ]
         future = asyncio.gather(*tasks)
@@ -259,7 +258,7 @@ class Application:
 
             # Teardown
             tasks = [
-                asyncio.ensure_future(callback(self))
+                loop.create_task(callback(self))
                 for callback in self._callbacks["teardown"]
             ]
             future = asyncio.gather(*tasks)
@@ -477,7 +476,7 @@ class Application:
     def _teardown(self, future: Future, loop: AbstractEventLoop) -> None:
         """Tear down the application."""
         tasks = [
-            asyncio.ensure_future(callback(self))
+            asyncio.create_tasks(callback(self))
             for callback in self._callbacks["teardown"]
         ]
         future = asyncio.gather(*tasks)
