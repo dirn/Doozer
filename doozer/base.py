@@ -10,9 +10,7 @@ import sys
 import traceback
 from typing import Any, Dict, Iterable, List, NoReturn, Optional
 
-# doozer.extensions.Extension is needed for a forward reference in an
-# annotation.
-from . import extensions  # NOQA: F401
+from . import extensions
 from .config import Config
 from .exceptions import Abort
 from .types import Callback, Consumer, Message
