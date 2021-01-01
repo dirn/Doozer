@@ -3,9 +3,7 @@ from __future__ import annotations
 
 from typing import Iterable, Mapping, Optional
 
-# doozer.extensions.Extension is needed for a forward reference in an
-# annotation.
-from . import base  # NOQA: F401
+from . import base
 
 __all__ = ("Extension",)
 
