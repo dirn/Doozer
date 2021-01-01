@@ -1,4 +1,5 @@
 """Tests for doozer.contrib.sphinx."""
+from __future__ import annotations
 
 from docutils.statemachine import StringList
 import pytest

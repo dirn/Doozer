@@ -3,6 +3,7 @@
 Retry is a plugin to add the ability for Doozer to automatically retry
 messages that fail to process.
 """
+from __future__ import annotations
 
 import asyncio
 from numbers import Number

@@ -1,4 +1,5 @@
 """Doozer package CLI entrypoint."""
+from __future__ import annotations
 
 import sys
 
