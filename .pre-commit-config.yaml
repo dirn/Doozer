@@ -33,5 +33,3 @@ repos:
           - flake8-mypy
           - pep8-naming
           - pydocstyle
-          # This is required for Python 3.6.
-          - typing-extensions
