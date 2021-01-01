@@ -1,5 +1,7 @@
 """Collection of Doozer CLI tasks."""
 
+from __future__ import annotations
+
 from argparse import Action
 from collections import Counter
 from contextlib import suppress

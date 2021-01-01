@@ -1,4 +1,5 @@
 """Test the configuration utility."""
+from __future__ import annotations
 
 from doozer.config import Config
 

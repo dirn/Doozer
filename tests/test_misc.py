@@ -1,4 +1,5 @@
 """Miscellaneous tests that don't have a better home."""
+from __future__ import annotations
 
 import asyncio
 import asyncio.base_events

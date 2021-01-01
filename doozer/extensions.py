@@ -1,4 +1,5 @@
 """Extension base."""
+from __future__ import annotations
 
 from typing import Iterable, Mapping, Optional
 
@@ -18,7 +19,7 @@ class Extension:
             of settings to interact with a database.
     """
 
-    def __init__(self, app: Optional["base.Application"] = None) -> None:
+    def __init__(self, app: Optional[base.Application] = None) -> None:
         """Initialize an instance of the extension.
 
         If app is provided, init_app will also be called with the
@@ -57,7 +58,7 @@ class Extension:
         """  # NOQA: D401
         return ()
 
-    def init_app(self, app: "base.Application") -> None:
+    def init_app(self, app: base.Application) -> None:
         """Initialize the application.
 
         In addition to associating the extension's default settings with

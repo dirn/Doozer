@@ -1,5 +1,7 @@
 """Test Doozer's exceptions."""
 
+from __future__ import annotations
+
 from doozer import exceptions
 from doozer.base import Application
 

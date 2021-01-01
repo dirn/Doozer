@@ -1,4 +1,5 @@
 """Test for doozer.contrib.retry."""
+from __future__ import annotations
 
 import asyncio
 from contextlib import suppress

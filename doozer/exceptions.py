@@ -1,4 +1,5 @@
 """Custom exceptions used by Doozer."""
+from __future__ import annotations
 
 from .types import Message
 

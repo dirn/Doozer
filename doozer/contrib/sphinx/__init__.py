@@ -1,4 +1,5 @@
 """Sphinx contrib plugin for documenting Doozer CLI extensions."""
+from __future__ import annotations
 
 from sphinxcontrib.autoprogram import AutoprogramDirective
 

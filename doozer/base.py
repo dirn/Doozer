@@ -1,4 +1,5 @@
 """Implementation of the service."""
+from __future__ import annotations
 
 import asyncio
 from asyncio import AbstractEventLoop, Future, Queue
@@ -67,7 +68,7 @@ class Application:
             "teardown": [],
         }
 
-        self.extensions: Dict[str, "extensions.Extension"] = {}
+        self.extensions: Dict[str, extensions.Extension] = {}
 
         self.consumer = consumer
 

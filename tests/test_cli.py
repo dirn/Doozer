@@ -1,4 +1,5 @@
 """CLI tests."""
+from __future__ import annotations
 
 from argparse import Namespace
 from inspect import getsource

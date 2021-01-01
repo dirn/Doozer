@@ -1,4 +1,5 @@
 """Test handling of apps."""
+from __future__ import annotations
 
 import pytest
 
